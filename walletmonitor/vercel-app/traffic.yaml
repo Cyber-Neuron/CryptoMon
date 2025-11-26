@@ -1,0 +1,10 @@
+# ngrok traffic-policy 示例
+# 对所有请求应用 Basic-Auth
+on_http_request:
+  - actions:
+      - type: basic-auth
+        config:
+          realm: sample-realm
+          credentials:
+            - crypto:52MRHvhaOhR/dham1D1vSrFsLMjgxzyO
+          enforce: true 

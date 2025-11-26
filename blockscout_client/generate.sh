@@ -1,0 +1,1 @@
+openapi-python-client generate --path swagger-blockscout-api.yaml  --output-path blockscout_client_3.3 --config block_config.yaml

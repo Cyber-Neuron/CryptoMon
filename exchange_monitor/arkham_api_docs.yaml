@@ -1,0 +1,3305 @@
+openapi: 3.0.3
+info:
+    title: Arkham Intel Platform API
+    version: "1.0.0"
+    description: |
+        ## Arkham Intelligence official API documentation
+
+        The Arkham API provides direct query access to Ultra, our proprietary AI-powered algorithmic address matching engine, enabling sophisticated users to customize data flows and integrate them into their existing systems.
+
+        Through the API, users can write custom queries to access a list of Arkham labels, as well as transaction logs and historical balance data for addresses and entities.
+
+        Institutions that onboard to the **[Arkham Exchange](https://arkm.com)** automatically qualify for access to this API.
+
+        The [deprecated API documentation](https://arkham-intelligence.notion.site/Arkham-API-Access-9232652274854efaa8a67633a94a2595) is available here in multiple languages; however, please note that it is no longer being updated.
+
+        ---
+        ## Authentication
+
+        All you need to do to authenticate with Arkham's API is provide a valid `API-Key` in the header of your request. If you want to get API access to our platform, you can apply here: [https://info.arkm.com/api-platform](https://info.arkm.com/api-platform).
+
+        ## Endpoints
+
+        Our root URL is `https://api.arkm.com`.
+
+        ## Rate limits
+
+        Our API uses tier-based rate limits. For the Basic API tier, you can send up to 20 requests per second with a small additional burst allowance for occasional spikes beyond that threshold.
+
+        If you are consistently hitting the default rate limit we have set for our API you can apply for a rate limit increase [here](https://docs.google.com/forms/d/e/1FAIpQLSdUIXdQwfElz7JOdYGljIr0l9UybkY-uDhoFxJ4wzTDEV2zVw/viewform).
+
+        ---
+        ## Security and Privacy
+        All data on our platform—including your private labels—is stored securely, using state-of-the-art encryption both at rest and in transit, along with strict access controls to ensure your information remains confidential. For further details on our security and privacy measures, please refer to our [Privacy Policy.](https://info.arkm.com/privacy-policy)
+servers:
+    # - url: "http://localhost:1323"
+    #   description: Local development server
+    - url: "https://api.arkm.com"
+      description: Production server
+components:
+    securitySchemes:
+        ApiKeyAuth:
+            type: apiKey
+            in: header
+            name: API-Key
+    responses:
+        BadRequest:
+            description: Bad request
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Bad request"
+        Unauthorized:
+            description: Unauthorized request
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "API key missing or invalid"
+        NotFound:
+            description: Resource not found
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            error:
+                                type: string
+                                example: "Not found"
+        InternalServerError:
+            description: Internal server error.
+            content:
+                application/json:
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+    schemas:
+        Label:
+            type: object
+            properties:
+                name:
+                    type: string
+                note:
+                    type: string
+                address:
+                    type: string
+                chainType:
+                    type: string
+            required:
+                - name
+                - address
+                - chainType
+        LabelInput:
+            type: object
+            properties:
+                name:
+                    type: string
+                    maxLength: 256
+                note:
+                    type: string
+                    maxLength: 1024
+                address:
+                    type: string
+                chainType:
+                    type: string
+            required:
+                - name
+                - address
+                - chainType
+        TopToken:
+            type: object
+            properties:
+                token:
+                    type: object
+                    properties:
+                        id:
+                            type: string
+                        symbol:
+                            type: string
+                        marketCap:
+                            type: number
+
+                            nullable: true
+                current:
+                    $ref: "#/components/schemas/TopTokenInterval"
+                previous:
+                    $ref: "#/components/schemas/TopTokenInterval"
+        TopTokenInterval:
+            type: object
+            properties:
+                price:
+                    type: number
+
+                inflowDexVolume:
+                    type: number
+
+                inflowCexVolume:
+                    type: number
+
+                outflowDexVolume:
+                    type: number
+
+                outflowCexVolume:
+                    type: number
+        EntityUpdateRequest:
+            type: object
+            required:
+                - name
+                - note
+                - id
+                - addresses
+                - ownerUID
+                - linkShareable
+                - createdAt
+                - updatedAt
+            properties:
+                name:
+                    type: string
+                note:
+                    type: string
+                id:
+                    type: string
+                type:
+                    type: string
+                    nullable: true
+                service:
+                    type: boolean
+                    nullable: true
+                addresses:
+                    type: object
+                    additionalProperties:
+                        type: array
+                        items:
+                            type: string
+                ownerUID:
+                    type: string
+                linkShareable:
+                    type: boolean
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+        Entity:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                note:
+                    type: string
+                addresses:
+                    type: object
+                    additionalProperties:
+                        type: array
+                        items:
+                            type: string
+                customized:
+                    type: boolean
+                type:
+                    type: string
+                    nullable: true
+                service:
+                    type: boolean
+                    nullable: true
+                ownerUID:
+                    type: string
+                website:
+                    type: string
+                twitter:
+                    type: string
+                crunchbase:
+                    type: string
+                linkedin:
+                    type: string
+                instagram:
+                    type: string
+                customImageSlug:
+                    type: string
+                populatedTags:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/PopulatedTag"
+                linkShareable:
+                    type: boolean
+        PopulatedTag:
+            type: object
+            properties:
+                id:
+                    type: string
+                label:
+                    type: string
+                rank:
+                    type: integer
+                excludeEntities:
+                    type: boolean
+                chain:
+                    type: string
+                disablePage:
+                    type: boolean
+                tagParams:
+                    type: string
+        UserEntity:
+            allOf:
+                - $ref: "#/components/schemas/Entity"
+                - type: object
+                  properties:
+                      createdAt:
+                          type: string
+                          format: date-time
+                      updatedAt:
+                          type: string
+                          format: date-time
+        ArkhamEntity:
+            allOf:
+                - $ref: "#/components/schemas/Entity"
+                - type: object
+                  properties:
+                      description:
+                          type: string
+
+        Address:
+            type: object
+            properties:
+                address:
+                    type: string
+                    description: The raw address (hex for EVM chains, base58 for Bitcoin, etc.)
+                chain:
+                    type: string
+                    description: The chain associated with the address
+                depositServiceID:
+                    type: string
+                    nullable: true
+                arkhamEntity:
+                    type: object
+                    nullable: true
+                    properties:
+                        name:
+                            type: string
+                            nullable: true
+                        note:
+                            type: string
+                            nullable: true
+                        id:
+                            type: string
+                            nullable: true
+                        type:
+                            type: string
+                            nullable: true
+                        service:
+                            type: string
+                            nullable: true
+                        addresses:
+                            type: string
+                            nullable: true
+                        website:
+                            type: string
+                            nullable: true
+                        twitter:
+                            type: string
+                            nullable: true
+                        crunchbase:
+                            type: string
+                            nullable: true
+                        linkedin:
+                            type: string
+                            nullable: true
+                arkhamLabel:
+                    type: object
+                    nullable: true
+                    properties:
+                        name:
+                            type: string
+                            nullable: true
+                        address:
+                            type: string
+                            nullable: true
+                        chainType:
+                            type: string
+                            nullable: true
+                isUserAddress:
+                    type: boolean
+                    nullable: true
+                contract:
+                    type: boolean
+                    nullable: true
+            description: Blockchain address intelligence object
+        PortfolioEntry:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: "abc123"
+                name:
+                    type: string
+                    example: "Bitcoin"
+                symbol:
+                    type: string
+                    example: "BTC"
+                balance:
+                    type: number
+
+                    example: 1.5
+                price:
+                    type: number
+
+                    example: 50000
+                usd:
+                    type: number
+
+                    example: 75000
+        AddressPortfolioHistory:
+            type: object
+            description: >
+                A map where each key is a chain name and the value is a map of portfolio entries keyed by asset ID.
+            additionalProperties:
+                type: object
+                additionalProperties:
+                    $ref: "#/components/schemas/PortfolioEntry"
+        EntityPortfolioHistory:
+            type: object
+            description: A map where each key is a chain name and the value is a map of portfolio entries keyed by asset ID.
+            additionalProperties:
+                type: object
+                additionalProperties:
+                    $ref: "#/components/schemas/PortfolioEntry"
+        Transfer:
+            type: object
+            properties:
+                id:
+                    type: string
+                    description: Unique identifier (transaction hash + log index)
+                transactionHash:
+                    type: string
+                fromAddress:
+                    $ref: "#/components/schemas/Address"
+                toAddress:
+                    $ref: "#/components/schemas/Address"
+                tokenAddress:
+                    type: string
+                    nullable: true
+                type:
+                    type: string
+                    description: external, internal, or token
+                blockTimestamp:
+                    type: string
+                    format: date-time
+                blockNumber:
+                    type: integer
+                    nullable: true
+                blockHash:
+                    type: string
+                    nullable: true
+                tokenName:
+                    type: string
+                    nullable: true
+                tokenSymbol:
+                    type: string
+                    nullable: true
+                tokenDecimals:
+                    type: integer
+                    nullable: true
+                unitValue:
+                    type: number
+                    nullable: true
+                tokenId:
+                    type: string
+                    nullable: true
+                historicalUSD:
+                    type: number
+                    nullable: true
+                chain:
+                    type: string
+                    description: The chain on which the transfer occurred
+        Swap:
+            type: object
+            properties:
+                id:
+                    type: string
+                chain:
+                    type: string
+                blockTimestamp:
+                    type: string
+                    format: date-time
+                blockNumber:
+                    type: integer
+                blockHash:
+                    type: string
+                contractAddress:
+                    $ref: "#/components/schemas/Address"
+                sender:
+                    $ref: "#/components/schemas/Address"
+                receiver:
+                    $ref: "#/components/schemas/Address"
+                unitValue0:
+                    type: number
+                    nullable: true
+                unitValue1:
+                    type: number
+                    nullable: true
+                historicalUSD:
+                    type: number
+                    nullable: true
+                token0:
+                    type: string
+                    nullable: true
+                token0Id:
+                    type: string
+                    nullable: true
+                token0Name:
+                    type: string
+                    nullable: true
+                token0Symbol:
+                    type: string
+                    nullable: true
+                token0Decimals:
+                    type: integer
+                    nullable: true
+                token1:
+                    type: string
+                    nullable: true
+                token1Id:
+                    type: string
+                    nullable: true
+                token1Name:
+                    type: string
+                    nullable: true
+                token1Symbol:
+                    type: string
+                    nullable: true
+                token1Decimals:
+                    type: integer
+                    nullable: true
+                valid:
+                    type: boolean
+                    nullable: true
+                contractEntityId:
+                    type: string
+                    nullable: true
+            description: Data for a single swap event
+        HistogramItem:
+            type: object
+            properties:
+                time:
+                    type: string
+                    format: date-time
+                count:
+                    type: integer
+                usd:
+                    type: number
+            description: Aggregated transaction data for a time bucket
+        Contract:
+            type: object
+            properties:
+                address:
+                    type: string
+                bytecode:
+                    type: string
+                    nullable: true
+                functionSighashes:
+                    type: array
+                    nullable: true
+                    items:
+                        type: string
+                isProxy:
+                    type: boolean
+                    nullable: true
+                proxyAddress:
+                    type: string
+                    nullable: true
+                blockTimestamp:
+                    type: string
+                    format: date-time
+                    nullable: true
+                deployer:
+                    $ref: "#/components/schemas/Address"
+                internalDeployer:
+                    $ref: "#/components/schemas/Address"
+            description: Contract intelligence data
+        TokenBasicInfo:
+            type: object
+            properties:
+                identifier:
+                    type: object
+                    properties:
+                        pricingID:
+                            type: string
+                name:
+                    type: string
+                symbol:
+                    type: string
+                tvTicker:
+                    type: string
+                    nullable: true
+            description: Basic token intelligence data
+        NetworkStatus:
+            type: object
+            properties:
+                chain:
+                    type: string
+                active:
+                    type: boolean
+                price:
+                    type: number
+                priceChange24h:
+                    type: number
+                priceChange24hPercent:
+                    type: number
+                volume:
+                    type: number
+                marketCap:
+                    type: number
+                tip:
+                    type: integer
+                tps:
+                    type: number
+                transfers:
+                    type: integer
+                gasFee:
+                    type: number
+                    nullable: true
+                satFee:
+                    type: integer
+                    nullable: true
+            description: Basic status information for a given network
+        TokenHistoricalQuote:
+            type: object
+            properties:
+                time:
+                    type: string
+                    format: date-time
+                usd:
+                    type: number
+                volume24h:
+                    type: number
+                    nullable: true
+                marketCap:
+                    type: number
+                    nullable: true
+            description: Historical quote/time-series entry for a network or token
+        TrendingToken:
+            type: object
+            properties:
+                name:
+                    type: string
+                    nullable: true
+                symbol:
+                    type: string
+                    nullable: true
+                pricingID:
+                    type: string
+                price:
+                    type: number
+                price24hAgo:
+                    type: number
+                volume24h:
+                    type: number
+                allTimeHigh:
+                    type: number
+                allTimeLow:
+                    type: number
+                circulatingSupply:
+                    type: number
+                    nullable: true
+            description: A trending token data object
+        TxDetail:
+            type: object
+            additionalProperties:
+                type: object
+                properties:
+                    hash:
+                        type: string
+                    blockTimestamp:
+                        type: string
+                        format: date-time
+                    fromAddress:
+                        type: string
+                    toAddress:
+                        type: string
+                        nullable: true
+                    contractAddress:
+                        type: string
+                        nullable: true
+                    unitValue:
+                        type: number
+                        nullable: true
+                    usdValue:
+                        type: number
+                        nullable: true
+                    gasUsageByTransaction:
+                        type: number
+                        nullable: true
+                    gasLimit:
+                        type: number
+                        nullable: true
+                    gasPrice:
+                        type: number
+                        nullable: true
+                    fee:
+                        type: number
+                        nullable: true
+                    blockNumber:
+                        type: integer
+                        nullable: true
+                    receiptStatus:
+                        type: integer
+                        nullable: true
+                    ethPrice:
+                        type: number
+                        nullable: true
+                    tokenID:
+                        type: string
+                        nullable: true
+                    tokenSymbol:
+                        type: string
+                        nullable: true
+                    chain:
+                        type: string
+                        nullable: true
+        Counterparty:
+            type: object
+            properties:
+                address:
+                    $ref: "#/components/schemas/Address"
+                usd:
+                    type: number
+                    nullable: true
+                transactionCount:
+                    type: integer
+                    nullable: true
+                flow:
+                    type: string
+                    enum: [in, out, self, all]
+                    nullable: true
+                chains:
+                    type: array
+                    items:
+                        type: string
+            description: A counterparty aggregated info
+        LoanPosition:
+            type: object
+            properties:
+                name:
+                    type: string
+                symbol:
+                    type: string
+                id:
+                    type: string
+                address:
+                    type: string
+                    nullable: true
+                balance:
+                    type: number
+                    nullable: true
+                usd:
+                    type: number
+                    nullable: true
+                price:
+                    type: number
+                    nullable: true
+                protocol:
+                    type: string
+                    nullable: true
+                type:
+                    type: string
+                    enum: [yield, supplied, borrowed]
+                    nullable: true
+            description: A single loan/borrowed-lent position item
+        BalanceDetail:
+            type: object
+            properties:
+                name:
+                    type: string
+                symbol:
+                    type: string
+                id:
+                    type: string
+                ethereumAddress:
+                    type: string
+                    nullable: true
+                balance:
+                    type: number
+                    nullable: true
+                balanceExact:
+                    type: string
+                    nullable: true
+                usd:
+                    type: number
+                    nullable: true
+                price:
+                    type: number
+                    nullable: true
+                quoteTime:
+                    type: string
+                    format: date-time
+                    nullable: true
+                priceChange24hPercent:
+                    type: number
+                    nullable: true
+                priceChange24h:
+                    type: number
+                    nullable: true
+            description: A single token balance detail item
+        Tag:
+            type: object
+            properties:
+                id:
+                    type: string
+                template:
+                    type: string
+                    nullable: true
+                rank:
+                    type: integer
+                    nullable: true
+                excludeEntities:
+                    type: boolean
+                    nullable: true
+                category:
+                    type: string
+                    nullable: true
+                description:
+                    type: string
+                    nullable: true
+                disablePage:
+                    type: boolean
+                    nullable: true
+                tagName:
+                    type: string
+                    nullable: true
+                tagParams:
+                    type: string
+                    nullable: true
+            description: Tag metadata object
+        TopFlowItem:
+            type: object
+            properties:
+                address:
+                    $ref: "#/components/schemas/Address"
+                inUSD:
+                    type: number
+                    nullable: true
+                outUSD:
+                    type: number
+                    nullable: true
+                inValue:
+                    type: number
+                    nullable: true
+                outValue:
+                    type: number
+                    nullable: true
+                time:
+                    type: string
+                    format: date-time
+                    nullable: true
+        TokenVolumeItem:
+            type: object
+            properties:
+                inUSD:
+                    type: number
+                    nullable: true
+                outUSD:
+                    type: number
+                    nullable: true
+                inValue:
+                    type: number
+                    nullable: true
+                outValue:
+                    type: number
+                    nullable: true
+                time:
+                    type: string
+                    format: date-time
+                    nullable: true
+        TokenBalanceItem:
+            type: object
+            properties:
+                pricingID:
+                    type: string
+                name:
+                    type: string
+                symbol:
+                    type: string
+                balance:
+                    type: number
+                    nullable: true
+                price:
+                    type: number
+                    nullable: true
+                usd:
+                    type: number
+                    nullable: true
+            description: Token balance for an entity or address
+        FlowSnapshot:
+            type: object
+            properties:
+                time:
+                    type: string
+                    format: date-time
+                    description: The timestamp for this flow snapshot
+                inflow:
+                    type: number
+                    description: USD value flowing into the address/entity during this time period
+                outflow:
+                    type: number
+                    description: USD value flowing out of the address/entity during this time period
+                cumulativeInflow:
+                    type: number
+                    description: Running total of USD inflows up to this time
+                cumulativeOutflow:
+                    type: number
+                    description: Running total of USD outflows up to this time
+            description: Snapshot of flow data for a given time period
+security:
+    - ApiKeyAuth: []
+paths:
+    /health:
+        get:
+            tags:
+                - Health
+            summary: Health check endpoint
+            description: Returns a simple "ok" text if the server is running.
+            responses:
+                "200":
+                    description: Health check successful
+                    content:
+                        text/plain:
+                            schema:
+                                type: string
+                                example: "ok"
+    /chains:
+        get:
+            tags:
+                - Chains
+            summary: Get supported chains list
+            description: |
+                Retrieves a list of supported blockchain chains. The response is a simple JSON array of chain identifiers.
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: Successful retrieval of the chains list.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: string
+                            example: '["ethereum", "bitcoin", "solana"...]'
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /transfers:
+        get:
+            tags:
+                - Transfers
+            summary: Get transfers
+            description: |
+                Retrieves a list of transfers based on various query filters.
+
+                **Filter parameters:**
+                - **base**: Filter by specific entity or address. For example, "0x123abc" or "binance".
+                - **chains**: Specify a comma-separated list of chains (e.g. "ethereum,bsc").
+                - **flow**: Direction of the transfer. Valid values are "in" (incoming), "out" (outgoing), "self" (self-transfers), or "all".
+                - **from**: Comma-separated list of addresses, entities, or deposit services for the 'from' side of a transfer. You can also use special syntax like `"type:cex"` to filter on entity types or `"deposit:binance"` to filter on deposit addresses.
+                - **to**: Comma-separated list of addresses, entities, or deposit services for the 'to' side.
+                - **tokens**: Comma-separated list of token addresses or token IDs. E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - **counterparties**: Comma-separated list of addresses or entities to treat strictly as counterparties (only base <-> counterparty transfers).
+                - **timeLast**: Filter transfers from a recent duration. For example, "24h" returns transfers from the last 24 hours.
+                - **timeGte/timeLte**: Filter from/to a specific timestamp in milliseconds.
+                - **valueGte/valueLte**: Numeric filters on the raw token amount (on-chain units).
+                - **usdGte/usdLte**: Numeric filters on the historical USD value of the transfer.
+                - **sortKey**: Field by which to sort the results. Options include "time", "value", or "usd".
+                - **sortDir**: Sorting direction. Use "asc" for ascending or "desc" for descending.
+                - **limit**: Maximum number of results to return (default is 50).
+                - **offset**: Pagination offset (default is 0).
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: base
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Filter by specific entity or address.
+                      For example: "0x123abc" or "binance".
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of chains.
+                      For example: "ethereum,bsc".
+                - name: flow
+                  in: query
+                  schema:
+                      type: string
+                      enum: [in, out, self, all]
+                  description: >
+                      Transfer direction: "in" for incoming, "out" for outgoing, "self" for self-transfers, or "all" for all transfers.
+                - name: from
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of addresses, entities, or deposit services for the 'from' side.
+                      You can also use special syntax like `"type:cex"` to filter on entity types or `"deposit:binance"` to filter on deposit addresses.
+                - name: to
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of addresses, entities, or deposit services for the 'to' side.
+                - name: tokens
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of token addresses or token IDs.
+                      E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - name: counterparties
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of addresses or entities to treat strictly as counterparties
+                      (only base <-> counterparty transfers).
+                - name: timeLast
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter using relative durations.
+                      For example: "24h" for transfers in the last 24 hours, "7d" for last 7 days.
+                - name: timeGte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (from) in milliseconds (e.g. `1696630274000`).
+                - name: timeLte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (to) in milliseconds (e.g. `1696716674000`).
+                - name: valueGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum raw token value (on-chain units).
+                - name: valueLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum raw token value (on-chain units).
+                - name: usdGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum historical USD value.
+                - name: usdLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum historical USD value.
+                - name: sortKey
+                  in: query
+                  schema:
+                      type: string
+                      enum: [time, value, usd]
+                - name: sortDir
+                  in: query
+                  schema:
+                      type: string
+                      enum: [asc, desc]
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 50
+                  description: >
+                      Maximum number of results to return.
+                - name: offset
+                  in: query
+                  schema:
+                      type: integer
+                      default: 0
+                  description: >
+                      Pagination offset.
+            responses:
+                "200":
+                    description: Successful list of transfers
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    transfers:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/Transfer"
+                                    count:
+                                        type: integer
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /transfers/histogram:
+        get:
+            tags:
+                - Transfers
+            summary: Get a histogram of transfers
+            description: |
+                Returns an aggregated histogram of transfers over time (count and USD values) based on the same filter parameters used in `/transfers`.
+
+                **Additional parameter**:
+                - **granularity**: "1h" or "1d" (if the range exceeds 30 days, "1h" is invalid).
+
+                **Filter parameters** (same as `/transfers`, minus pagination/sorting):
+                - **base**: Filter by specific entity or address. For example, "0x123abc" or "binance".
+                - **chains**: Specify a comma-separated list of chains (e.g. "ethereum,bsc").
+                - **flow**: Direction of the transfer. Valid values are "in", "out", "self", or "all".
+                - **timeLast**: Filter from a recent duration (e.g. "24h", "7d", "30d", etc.).
+                - **timeGte/timeLte**: Filter from/to a specific timestamp in milliseconds.
+                - **valueGte/valueLte**: Numeric filters on the raw token amount.
+                - **usdGte/usdLte**: Numeric filters on the historical USD value of the transfer.
+                - **from**: Comma-separated list of addresses, entities, or deposit services for the 'from' side.
+                - **to**: Comma-separated list of addresses, entities, or deposit services for the 'to' side.
+                - **tokens**: Comma-separated list of token addresses or token IDs.
+                  E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - **counterparties**: Comma-separated list of addresses or entities to treat strictly as counterparties
+                  (only base <-> counterparty transfers).
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: base
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                  description: >
+                      Filter by specific entity or address.
+                      For example: "0x123abc" or "binance".
+                - name: granularity
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      enum: [1h, 1d]
+                  description: >
+                      Granularity of histogram buckets. Valid values: "1h" or "1d".
+                      For time ranges over 30 days, only "1d" is valid.
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of chains.
+                      For example: "ethereum,bsc".
+                - name: flow
+                  in: query
+                  schema:
+                      type: string
+                      enum: [in, out, self, all]
+                  description: >
+                      Transfer direction: "in" for incoming, "out" for outgoing, "self" for self-transfers, or "all".
+                - name: timeLast
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter using relative durations.
+                      Examples: "24h", "7d", "30d".
+                - name: timeGte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (from) in milliseconds (e.g. `1696630274000`).
+                - name: timeLte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (to) in milliseconds (e.g. `1696716674000`).
+                - name: valueGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum raw token value (on-chain units).
+                - name: valueLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum raw token value (on-chain units).
+                - name: usdGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum historical USD value.
+                - name: usdLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum historical USD value.
+                - name: from
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of addresses, entities, or deposit services for the 'from' side.
+                      You can also use special syntax like `"type:smart_money"` or `"deposit:binance"`.
+                - name: to
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of addresses, entities, or deposit services for the 'to' side.
+                - name: tokens
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of token addresses or token IDs.
+                      E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - name: counterparties
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of addresses or entities to treat strictly as counterparties
+                      (only base <-> counterparty transfers).
+            responses:
+                "200":
+                    description: Successful histogram data
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/HistogramItem"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /user/entities/{id}:
+        put:
+            tags:
+                - Entity bulk update
+            summary: Overwrite an entity (replace addresses)
+            description: |
+                Updates an entity by overwriting its details and full address set. The complete JSON input must include the updated entity fields plus a multi‑chain `addresses` mapping. The `addresses` object is keyed by blockchain type (for example, `evm`, `bitcoin`, `solana`, etc.) and each value is an array of address strings.
+
+                **Important:** Any existing addresses not present in the payload will be removed. Use `/user/entities/only_add/{id}` if you want to keep existing addresses and only append new ones.
+
+                **Example Input Explanation:**
+                - **name / note:** Optional text fields. `name` is limited to 256 characters; `note` to 1024 characters.
+                - **addresses:** Map of chain to array of addresses.
+                - **Bulk update allows up to 100 total addresses per entity. Ensure addresses are valid and formatted correctly.**
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: Unique identifier of the entity to update. You can grab it from your url `https://intel.arkm.com/explorer/entity/{entityId}`
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/EntityUpdateRequest"
+                        example:
+                            name: "Example Entity"
+                            note: "Updated note for my entity."
+                            addresses:
+                                evm:
+                                    - "0xC17eF7e2689DFf7D269Ae2C22f857AcD60B42187"
+                                    - "0x7dCC00d0Da47e6982672CB1C2481A6943737af45"
+                                bitcoin:
+                                    - "bc1qd7m42p9w8djak3qeme06stw7ach7hewa88rd6q0rgegw3mdlpl5s5wje56"
+                                solana:
+                                    - "H6r6ShBfuoVYCCb8ZJANFYfR4y1EXr4vTLYPKbmHGxtv"
+                                tron:
+                                    - "TLBsPRBS6WeB6DyzKSNhKXHxaWESeoK44g"
+            responses:
+                "200":
+                    description: Successful update of the entity. Returns the updated entity.
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: "#/components/schemas/UserEntity"
+                                    - $ref: "#/components/schemas/ArkhamEntity"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "500":
+                    $ref: "#/components/responses/InternalServerError"
+    /user/entities/only_add/{id}:
+        put:
+            tags:
+                - Entity bulk update
+            summary: Bulk upload addresses for an entity (only add new addresses)
+            description: |
+                Updates an entity by bulk uploading addresses. The full JSON input must include the updated entity
+                details along with a multi-chain addresses mapping. The addresses object is keyed by blockchain type
+                (for example, `evm`, `bitcoin`, `solana`, etc.) and each value is an array of address strings.
+
+                **Example Input Explanation:**
+                - **addresses:** A map where each key is a chain identifier and the value is an array of valid hexadecimal
+                  addresses (or formatted address strings for non-EVM chains).
+                - Use the same JSON format regardless of whether the entity is a user entity or an Arkham entity.
+                - **Bulk upload allows up to 100 total addresses per entity. Make sure addresses are valid and formatted correctly.**
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: Unique identifier of the entity to update. You can grab it from your url `https://intel.arkm.com/explorer/entity/{entityId}`
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/EntityUpdateRequest"
+                        example:
+                            addresses:
+                                evm:
+                                    - "0xC17eF7e2689DFf7D269Ae2C22f857AcD60B42187"
+                                    - "0x7dCC00d0Da47e6982672CB1C2481A6943737af45"
+                                    - "0x36e7C3dd82A56192cF24f326361105D28b426d64"
+                                bitcoin:
+                                    - "bc1qd7m42p9w8djak3qeme06stw7ach7hewa88rd6q0rgegw3mdlpl5s5wje56"
+                                solana:
+                                    - "H6r6ShBfuoVYCCb8ZJANFYfR4y1EXr4vTLYPKbmHGxtv"
+                                tron:
+                                    - "TLBsPRBS6WeB6DyzKSNhKXHxaWESeoK44g"
+                                dogecoin:
+                                    - "D5mBhUmsSKTLMNzBCQcqhF4ZVg7RLtJtCS"
+                                ton:
+                                    - "0:412451AE5C7AE4A427DA58D02BFE6D3A3DB4602C4C2A87021B60ACA974189577"
+            responses:
+                "200":
+                    description: Successful update of the entity. Returns the updated entity.
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: "#/components/schemas/UserEntity"
+                                    - $ref: "#/components/schemas/ArkhamEntity"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "500":
+                    $ref: "#/components/responses/InternalServerError"
+    /tx/{hash}:
+        get:
+            tags:
+                - Transaction
+            summary: Get transaction details
+            description: >
+                Returns transaction details by hash
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: hash
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Transaction details
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TxDetail"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /arkm/circulating:
+        get:
+            tags:
+                - ARKM
+            summary: Get ARKM circulating supply
+            description: |
+                Retrieves the circulating supply of ARKM tokens based on the current time
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: Successful retrieval of circulating supply
+                    content:
+                        application/json:
+                            schema:
+                                type: integer
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /token/top:
+        get:
+            tags:
+                - Token exchange movements
+            summary: Get top tokens
+            description: |
+                Retrieves a list of top tokens based on various query filters.
+
+                **Filter parameters:**
+                - **timeframe**: Required time interval for token data. Valid values: "1h", "6h", "12h", "24h", "7d".
+                - **orderByAgg**: Aggregation field to order tokens by.
+                Valid values: "volume", "inflow", "outflow", "volumeDex", "volumeCex", "inflowDex", "inflowCex", "outflowDex", "outflowCex", "netflowDex", "netflowCex", "netflow", "netflowVolumeRatio", "netflowVolumeRatioDex", "netflowVolumeRatioCex", "price".
+                - **orderByDesc**: Sorting direction. Must be "true" for descending or "false" for ascending.
+                - **orderByPercent**: Whether to order results by percentage change. Must be "true" or "false".
+                - **from**: Starting index for pagination.
+                - **size**: Number of results to return.
+                - **chains**: Comma-separated list of blockchain chains (e.g., "ethereum,bsc").
+                - **minVolume**: Minimum trading volume (float; default is 0).
+                - **maxVolume**: Maximum trading volume (float; optional).
+                - **minMarketCap**: Minimum market capitalization (float; default is 0).
+                - **maxMarketCap**: Maximum market capitalization (float; optional).
+                - **numReferencePeriods**: Number of reference periods, defaults to "auto".
+                - **tokenIds**: Comma-separated list of token IDs to filter by (optional).
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: timeframe
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      enum:
+                          - "1h"
+                          - "6h"
+                          - "12h"
+                          - "24h"
+                          - "7d"
+                  description: Time interval for  token data.
+                - name: orderByAgg
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      enum:
+                          - volume
+                          - inflow
+                          - outflow
+                          - volumeDex
+                          - volumeCex
+                          - inflowDex
+                          - inflowCex
+                          - outflowDex
+                          - outflowCex
+                          - netflowDex
+                          - netflowCex
+                          - netflow
+                          - netflowVolumeRatio
+                          - netflowVolumeRatioDex
+                          - netflowVolumeRatioCex
+                          - price
+                  description: Aggregation field to order tokens by.
+                - name: orderByDesc
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      enum: ["true", "false"]
+                  description: Sorting direction flag. Use "true" for descending, "false" for ascending.
+
+                - name: orderByPercent
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                      enum: ["true", "false"]
+                  description: Whether to order results by percentage change.
+                - name: from
+                  in: query
+                  required: true
+                  schema:
+                      type: integer
+                      default: 0
+                  description: Starting index for pagination.
+                - name: size
+                  in: query
+                  required: true
+                  schema:
+                      type: integer
+                      default: 10
+                  description: Number of results to return.
+
+                - name: chains
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                  description: Comma-separated list of blockchain chains (e.g., "ethereum,bsc").
+
+                - name: minVolume
+                  in: query
+                  required: false
+                  schema:
+                      type: number
+                      default: 0
+                  description: Minimum volume filter.
+                - name: maxVolume
+                  in: query
+                  required: false
+                  schema:
+                      type: number
+                  description: Maximum volume filter.
+
+                - name: minMarketCap
+                  in: query
+                  required: false
+                  schema:
+                      type: number
+                      default: 0
+                  description: Minimum market capitalization filter.
+
+                - name: maxMarketCap
+                  in: query
+                  required: false
+                  schema:
+                      type: number
+                  description: Maximum market capitalization filter.
+                - name: numReferencePeriods
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                      default: "auto"
+                  description: Number of reference periods (default "auto").
+                - name: tokenIds
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Successful retrieval of top tokens.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    tokens:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/TopToken"
+                                    total:
+                                        type: integer
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "500":
+                    description: Internal server error.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/responses/InternalServerError"
+    /swaps:
+        get:
+            tags:
+                - Swaps
+            summary: Retrieve swap transactions
+            description: >
+                Returns a list of swap transactions based on filter criteria.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: for
+                  in: query
+                  required: true
+                  description: >
+                      Filter by specific entity or address
+                  schema:
+                      type: string
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of chains.
+                      For example: "ethereum,bsc".
+                - name: sortDir
+                  in: query
+                  required: false
+                  schema:
+                      type: string
+                      enum: [asc, desc]
+                - name: offset
+                  in: query
+                  schema:
+                      type: integer
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+            responses:
+                "200":
+                    description: A list of swap transactions
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Swap"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /intelligence/address/{address}:
+        get:
+            tags:
+                - Intelligence
+            summary: Get intelligence about an address
+            description: Returns intelligence data for the specified address.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The address to lookup.
+                - name: chain
+                  in: query
+                  schema:
+                      type: string
+                  description: Optional chain parameter.
+            responses:
+                "200":
+                    description: Address intelligence returned successfully.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Address"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /intelligence/address/{address}/all:
+        get:
+            tags:
+                - Intelligence
+            summary: Get all intelligence about an address across chains
+            description: >
+                Returns multi-chain intelligence for the provided address.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The address to lookup.
+                - name: tags
+                  in: query
+                  schema:
+                      type: string
+                  description: If "true", include extra enrichment (e.g. tags).
+            responses:
+                "200":
+                    description: Multi-chain intelligence for the address.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                additionalProperties:
+                                    $ref: "#/components/schemas/Address"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /intelligence/address_with_extra_enrichment/{address}/all:
+        get:
+            tags:
+                - Intelligence
+            summary: Get intelligence about an address on **all chains** with extra enrichment
+            description: >
+                Similar to `/intelligence/address_with_extra_enrichment/{address}`, but
+                aggregates data across **every supported chain**. 
+                Add `tags=true` to include populated tag details.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: tags
+                  in: query
+                  schema:
+                      type: boolean
+            responses:
+                "200":
+                    description: Address intelligence with extra tagging per chain
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                # each key is a chain symbol (e.g. ETH, BTC); value is AddressWithExtraEnrichment
+                                additionalProperties:
+                                    $ref: "#/components/schemas/AddressWithExtraEnrichment"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /intelligence/address_with_extra_enrichment/{address}:
+        get:
+            tags:
+                - Intelligence
+            summary: Get intelligence about an address with extra enrichment
+            description: >
+                Similar to `/intelligence/address/{address}`, but includes additional tagging info if `tags=true`.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: chain
+                  in: query
+                  schema:
+                      type: string
+                - name: tags
+                  in: query
+                  schema:
+                      type: boolean
+            responses:
+                "200":
+                    description: Address intelligence with extra tagging
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /intelligence/entity/{entity}:
+        get:
+            tags:
+                - Intelligence
+            summary: Get intelligence about an entity
+            description: >
+                Returns top-level entity information, including associated tags.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Entity intelligence
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    name:
+                                        type: string
+                                    note:
+                                        type: string
+                                    id:
+                                        type: string
+                                    type:
+                                        type: string
+                                    addresses:
+                                        type: array
+                                        items:
+                                            type: string
+                                    website:
+                                        type: string
+                                    populatedTags:
+                                        type: array
+                                        items:
+                                            $ref: "#/components/schemas/Tag"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /intelligence/contract/{chain}/{address}:
+        get:
+            tags:
+                - Intelligence
+            summary: Get intelligence about a contract
+            description: Returns contract metadata for the specified chain & address.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: chain
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Contract intelligence
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/Contract"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /intelligence/token/{id}:
+        get:
+            tags:
+                - Intelligence
+            summary: Get intelligence on a token by CoinGecko pricing ID
+            description: >
+                Retrieve basic token info using the CoinGecko pricing ID.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The CoinGecko ID (e.g. "bitcoin", "ethereum").
+            responses:
+                "200":
+                    description: Token intelligence
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TokenBasicInfo"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /intelligence/token/{chain}/{address}:
+        get:
+            tags:
+                - Intelligence
+            summary: Get intelligence on a token by chain/address
+            description: >
+                Retrieve basic token info using chain + contract address.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: chain
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Token intelligence
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TokenBasicInfo"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /history/entity/{entity}:
+        get:
+            tags:
+                - History
+            summary: Get historical data for an entity
+            description: Returns historical USD snapshots for the specified entity.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The entity ID.
+            responses:
+                "200":
+                    description: Historical data for the entity.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        time:
+                                            type: string
+                                            format: date-time
+                                        usd:
+                                            type: number
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /history/address/{address}:
+        get:
+            tags:
+                - History
+            summary: Get historical data for an address
+            description: Returns historical USD snapshots for the specified address.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The address to lookup.
+                - name: chain
+                  in: query
+                  schema:
+                      type: string
+                  description: Optional chain parameter.
+            responses:
+                "200":
+                    description: Historical data for the address.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    type: object
+                                    properties:
+                                        time:
+                                            type: string
+                                            format: date-time
+                                        usd:
+                                            type: number
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /portfolio/entity/{entity}:
+        get:
+            tags:
+                - Portfolio
+            summary: Get entity portfolio history
+            description: |
+                Retrieves historical portfolio snapshots for the specified entity across chains.
+
+                **Filter parameters:**
+                - **entity**: The unique identifier of the entity. This can be a user entity ID or another entity.
+                - **time**: Unix timestamp in milliseconds representing the time for which to retrieve the portfolio history. The time will be truncated to the start of the UTC day.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The entity identifier.
+                - name: time
+                  in: query
+                  required: true
+                  schema:
+                      type: integer
+                  description: Unix timestamp in milliseconds (e.g. 1672531200000).
+            responses:
+                "200":
+                    description: Portfolio history retrieved successfully.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/EntityPortfolioHistory"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "500":
+                    description: Internal server error.
+    /portfolio/address/{address}:
+        get:
+            tags:
+                - Portfolio
+            summary: Get address portfolio history
+            description: |
+                Retrieves historical portfolio snapshots for the specified address across chains.
+
+                **Filter parameters:**
+                - **address**: The blockchain address for which to retrieve portfolio history.
+                - **time**: Unix timestamp in milliseconds representing the time for which to retrieve the portfolio history. The time is truncated to the start of the UTC day.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The blockchain address.
+                - name: time
+                  in: query
+                  required: true
+                  schema:
+                      type: integer
+                  description: Unix timestamp in milliseconds (e.g. 1672531200000).
+            responses:
+                "200":
+                    description: Portfolio history retrieved successfully.
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AddressPortfolioHistory"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "500":
+                    description: Internal server error.
+    /portfolio/timeSeries/entity/{entity}:
+        get:
+            tags:
+                - Portfolio
+            summary: Get daily time series data for an entity's token
+            description: >
+                Returns daily snapshots (in UTC) of the specified entity's holdings of a given token.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: pricingId
+                  in: query
+                  schema:
+                      type: string
+                  description: CoinGecko ID for the token
+            responses:
+                "200":
+                    description: A daily time series of balances
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                additionalProperties:
+                                    type: object
+                                    properties:
+                                        balance:
+                                            type: number
+                                        price:
+                                            type: number
+                                        usd:
+                                            type: number
+    /portfolio/timeSeries/address/{address}:
+        get:
+            tags:
+                - Portfolio
+            summary: Get daily time series data for an address's token
+            description: >
+                Returns daily snapshots (in UTC) of the specified address's holdings of a given token.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: pricingId
+                  in: query
+                  schema:
+                      type: string
+                  description: CoinGecko ID for the token
+            responses:
+                "200":
+                    description: A daily time series of balances
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+    /token/holders/{pricing_id}:
+        get:
+            tags:
+                - Token
+            summary: Get top token holders by pricing ID
+            description: Returns top token holders for the token identified by its CoinGecko pricing ID.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: pricing_id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The CoinGecko pricing ID (e.g., "bitcoin", "ethereum").
+                - name: groupByEntity
+                  in: query
+                  schema:
+                      type: boolean
+                  description: If true, group results by entity.
+            responses:
+                "200":
+                    description: Top token holders data
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    token:
+                                        $ref: "#/components/schemas/TokenBasicInfo"
+                                    totalSupply:
+                                        type: object
+                                        additionalProperties:
+                                            type: number
+                                    holders:
+                                        type: object
+                                        additionalProperties:
+                                            type: array
+                                            items:
+                                                type: object
+                                                properties:
+                                                    address:
+                                                        $ref: "#/components/schemas/Address"
+                                                    balance:
+                                                        type: number
+                                                    usd:
+                                                        type: number
+                                                    pctOfCap:
+                                                        type: number
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /token/holders/{chain}/{address}:
+        get:
+            tags:
+                - Token
+            summary: Get top token holders by chain and address
+            description: Returns top token holders for the token at the specified contract address on the given chain.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: chain
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The chain (e.g. "ethereum").
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The token contract address.
+                - name: groupByEntity
+                  in: query
+                  schema:
+                      type: boolean
+                  description: If true, group results by entity.
+            responses:
+                "200":
+                    description: Top token holders data
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /token/trending:
+        get:
+            tags:
+                - Token
+            summary: Get trending tokens
+            description: Returns a list of currently trending tokens across multiple chains.
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: An array of trending tokens
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/TrendingToken"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /token/trending/{id}:
+        get:
+            tags:
+                - Token
+            summary: Get a single trending token by ID
+            description: Returns a single trending token, identified by a specific ID (e.g., "bitcoin", "ethereum").
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The pricing ID (CoinGecko ID).
+            responses:
+                "200":
+                    description: A single trending token object
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TrendingToken"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /marketdata/altcoin_index:
+        get:
+            tags:
+                - Market Data
+            summary: Get Altcoin Index
+            description: |
+                Retrieves the altcoin index calculated by comparing the percentage change of top altcoins to Bitcoin's percentage change over the last 90 days.
+                The index represents the count of altcoins outperforming Bitcoin.
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: Successful retrieval of altcoin index
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    altcoinIndex:
+                                        type: integer
+                "500":
+                    description: Internal Server Error - Error calculating altcoin index
+    /token/arkham_exchange_tokens:
+        get:
+            tags:
+                - ARKM
+            summary: Get Arkham Exchange tokens
+            description: Returns a JSON object with token symbols/addresses as keys and booleans as values.
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: Object mapping token => boolean
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                additionalProperties:
+                                    type: boolean
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /token/top_flow/{id}:
+        get:
+            tags:
+                - Token
+            summary: Get top flow for a token by pricing ID
+            description: >
+                Returns the top inflows/outflows for the specified token ID, aggregated by address.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: timeLast
+                  in: query
+                  schema:
+                      type: string
+                  description: "e.g. 24h, 7d, 1h"
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: An array of top flows
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/TopFlowItem"
+    /token/top_flow/{chain}/{address}:
+        get:
+            tags:
+                - Token
+            summary: Get top token flow
+            description: |
+                Retrieves the top token flow (in USD and value) for the specified chain and address over a given duration.
+
+                **Filter parameters:**
+                - **chain**: The blockchain chain identifier (e.g., ethereum, bitcoin).
+                - **address**: The token address or holder address.
+                - **timeLast**: A duration string (e.g., "24h", "7d") representing the time window to consider.
+                - **chains** (optional): Comma-separated list of chains to further filter the results.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: chain
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The blockchain chain (e.g., ethereum, bitcoin).
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The token address or holder address.
+                - name: timeLast
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                  description: Duration string representing the time window (e.g., "24h", "7d").
+                - name: id
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                  description: pricingID of a token, e.g. "arkham"
+            responses:
+                "200":
+                    description: Top token flow data retrieved successfully.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/TopFlowItem"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "500":
+                    description: Internal server error.
+    /token/volume/{id}:
+        get:
+            tags:
+                - Token
+            summary: Get volume for a token by pricing ID
+            description: >
+                Returns aggregated volume data for the specified token ID, optionally broken down by time granularity.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: timeLast
+                  in: query
+                  schema:
+                      type: string
+                - name: granularity
+                  in: query
+                  schema:
+                      type: string
+                      enum: [1h, 24h, 7d, 1w]
+            responses:
+                "200":
+                    description: A list of volume data
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/TokenVolumeItem"
+    /token/volume/{chain}/{address}:
+        get:
+            tags:
+                - Token
+            summary: Get volume for a token by chain/address
+            description: >
+                Returns aggregated volume data for the specified token contract on a certain chain.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: chain
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: timeLast
+                  in: query
+                  schema:
+                      type: string
+                - name: granularity
+                  in: query
+                  schema:
+                      type: string
+                      enum: [1h, 24h, 7d, 1w]
+            responses:
+                "200":
+                    description: A list of volume data
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/TokenVolumeItem"
+    /token/balance/{id}:
+        get:
+            tags:
+                - Token
+            summary: Get token balance (all chains) for an entity or address
+            description: >
+                Returns the aggregated token balance for either an entity or address, across all chains.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: CoinGecko pricing ID (e.g. "bitcoin")
+                - name: entityID
+                  in: query
+                  schema:
+                      type: string
+                - name: address
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Basic balance info
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TokenBalanceItem"
+    /token/balance/{chain}/{address}:
+        get:
+            tags:
+                - Token
+            summary: Get token balance for an entity or address, for a specific chain/address
+            description: >
+                Returns the aggregated token balance for either an entity or address, across all chains,
+                but identified by the specific token contract.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: chain
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: entityID
+                  in: query
+                  schema:
+                      type: string
+                - name: addressQuery
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Basic balance info
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/TokenBalanceItem"
+    /networks/status:
+        get:
+            tags:
+                - Networks
+            summary: Get status for all supported networks
+            description: Returns an array of current status information for each network.
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: Array of network statuses
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/NetworkStatus"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+    /networks/history/{chain}:
+        get:
+            tags:
+                - Networks
+            summary: Get historical network data
+            description: Returns historical quotes for the specified chain.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: chain
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The chain (e.g., "ethereum", "bitcoin").
+            responses:
+                "200":
+                    description: Historical quotes for the chain
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/TokenHistoricalQuote"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "404":
+                    $ref: "#/components/responses/NotFound"
+    /balances/address/{address}:
+        get:
+            tags:
+                - Balances
+            summary: Get token balances for an address
+            description: >
+                Returns token balances for the specified address, optionally filtered by chains.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: Comma-separated chain list
+            responses:
+                "200":
+                    description: Balances for the address
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    totalBalance:
+                                        type: object
+                                    balances:
+                                        type: object
+                                        additionalProperties:
+                                            type: array
+                                            items:
+                                                $ref: "#/components/schemas/BalanceDetail"
+    /balances/entity/{entity}:
+        get:
+            tags:
+                - Balances
+            summary: Get token balances for an entity
+            description: >
+                Returns token balances for the specified entity, optionally filtered by chains.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: Comma-separated chain list
+            responses:
+                "200":
+                    description: Balances for the entity
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    totalBalance:
+                                        type: object
+                                    balances:
+                                        type: object
+                                        additionalProperties:
+                                            type: array
+                                            items:
+                                                $ref: "#/components/schemas/BalanceDetail"
+    /loans/address/{address}:
+        get:
+            tags:
+                - Loans
+            summary: Get loan/borrow positions for an address
+            description: >
+                Returns an overview of loaned/supplied/borrowed assets for a given address.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Loan details
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    totalPositions:
+                                        type: object
+                                        additionalProperties:
+                                            type: number
+                                    balances:
+                                        type: object
+                                        additionalProperties:
+                                            type: array
+                                            items:
+                                                $ref: "#/components/schemas/LoanPosition"
+    /loans/entity/{entity}:
+        get:
+            tags:
+                - Loans
+            summary: Get loan/borrow positions for an entity
+            description: >
+                Returns an overview of loaned/supplied/borrowed assets for a given entity.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: Loan details for the entity
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                properties:
+                                    totalPositions:
+                                        type: object
+                                        additionalProperties:
+                                            type: number
+                                    balances:
+                                        type: object
+                                        additionalProperties:
+                                            type: array
+                                            items:
+                                                $ref: "#/components/schemas/LoanPosition"
+    /counterparties/address/{address}:
+        get:
+            tags:
+                - Counterparties
+            summary: Get counterparties for an address
+            description: |
+                Returns aggregated info about top counterparties by volume (in/out).
+
+                **Filter parameters:**
+                - **flow**: Direction of the transfer. Valid values are "in", "out", "all", or "self".
+                - **limit**: Maximum number of results to return.
+                - **chains**: Comma-separated list of chains (e.g. "ethereum,bsc").
+                - **tokens**: Comma-separated list of token addresses or token IDs. E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - **timeLast**: Time range filter using relative durations (e.g. "24h", "7d", "30d"). Cannot be used with timeGte/timeLte.
+                - **timeGte/timeLte**: Filter from/to a specific timestamp in milliseconds. Cannot be used with 'timeLast' parameter.
+                - **valueGte/valueLte**: Numeric filters on the raw token amount (on-chain units).
+                - **usdGte/usdLte**: Numeric filters on the historical USD value.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The address to get counterparties for.
+                - name: flow
+                  in: query
+                  schema:
+                      type: string
+                      enum: [in, out, all, self]
+                  description: >
+                      Transfer direction: "in" for incoming, "out" for outgoing, "all" for both directions, or "self" for self-transfers.
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 100
+                  description: >
+                      Maximum number of counterparties to return (between 1 and 1000).
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of chains.
+                      For example: "ethereum,bsc".
+                - name: tokens
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of token addresses or token IDs.
+                      E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - name: timeLast
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter using relative durations.
+                      Examples: "24h", "7d", "30d". Cannot be used with timeGte/timeLte.
+                - name: timeGte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (from) in milliseconds (e.g. `1696630274000`).
+                      Cannot be used with 'timeLast' parameter.
+                - name: timeLte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (to) in milliseconds (e.g. `1696716674000`).
+                      Cannot be used with 'timeLast' parameter.
+                - name: valueGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum raw token value (on-chain units).
+                - name: valueLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum raw token value (on-chain units).
+                - name: usdGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum historical USD value.
+                - name: usdLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum historical USD value.
+            responses:
+                "200":
+                    description: Counterparty data
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                additionalProperties:
+                                    type: array
+                                    items:
+                                        $ref: "#/components/schemas/Counterparty"
+    /counterparties/entity/{entity}:
+        get:
+            tags:
+                - Counterparties
+            summary: Get counterparties for an entity
+            description: |
+                Returns aggregated info about top counterparties by volume (in/out).
+
+                **Filter parameters:**
+                - **flow**: Direction of the transfer. Valid values are "in", "out", "all", or "self".
+                - **limit**: Maximum number of results to return.
+                - **chains**: Comma-separated list of chains (e.g. "ethereum,bsc").
+                - **tokens**: Comma-separated list of token addresses or token IDs. E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - **timeLast**: Time range filter using relative durations (e.g. "24h", "7d", "30d"). Cannot be used with timeGte/timeLte.
+                - **timeGte/timeLte**: Filter from/to a specific timestamp in milliseconds. Cannot be used with 'timeLast' parameter.
+                - **valueGte/valueLte**: Numeric filters on the raw token amount (on-chain units).
+                - **usdGte/usdLte**: Numeric filters on the historical USD value.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: The entity ID to get counterparties for.
+                - name: flow
+                  in: query
+                  schema:
+                      type: string
+                      enum: [in, out, all, self]
+                  description: >
+                      Transfer direction: "in" for incoming, "out" for outgoing, "all" for both directions, or "self" for self-transfers.
+                - name: limit
+                  in: query
+                  schema:
+                      type: integer
+                      default: 100
+                  description: >
+                      Maximum number of counterparties to return (between 1 and 1000).
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of chains.
+                      For example: "ethereum,bsc".
+                - name: tokens
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of token addresses or token IDs.
+                      E.g. "ethereum", "usd-coin", or "0x...tokenAddress".
+                - name: timeLast
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Alternative time range filter using relative durations.
+                      Examples: "24h", "7d", "30d". Cannot be used with timeGte/timeLte.
+                - name: timeGte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (from) in milliseconds (e.g. `1696630274000`).
+                      Cannot be used with 'timeLast' parameter.
+                - name: timeLte
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Time range filter (to) in milliseconds (e.g. `1696716674000`).
+                      Cannot be used with 'timeLast' parameter.
+                - name: valueGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum raw token value (on-chain units).
+                - name: valueLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum raw token value (on-chain units).
+                - name: usdGte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Minimum historical USD value.
+                - name: usdLte
+                  in: query
+                  schema:
+                      type: number
+                  description: >
+                      Maximum historical USD value.
+            responses:
+                "200":
+                    description: Counterparty data
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                additionalProperties:
+                                    type: array
+                                    items:
+                                        $ref: "#/components/schemas/Counterparty"
+    /user/labels:
+        get:
+            tags:
+                - Labels
+            summary: Get user labels
+            description: |
+                Retrieves a list of labels for the authenticated user.
+            security:
+                - ApiKeyAuth: []
+            responses:
+                "200":
+                    description: A list of labels.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Label"
+                            example:
+                                - name: "Ethereum Label"
+                                  note: "Label for Ethereum address"
+                                  address: "0xABCDEF1234567890"
+                                  chainType: "evm"
+                                - name: "Bitcoin Label"
+                                  note: "Label for Bitcoin address"
+                                  address: "bc1qexamplebitcoinaddress"
+                                  chainType: "bitcoin"
+                                - name: "Tron Label"
+                                  note: "Label for Tron address"
+                                  address: "TExampleTronAddress"
+                                  chainType: "tron"
+                                - name: "Solana Label"
+                                  note: "Label for Solana address"
+                                  address: "ExampleSolanaAddressBase58"
+                                  chainType: "solana"
+                                - name: "Dogecoin Label"
+                                  note: "Label for Dogecoin address"
+                                  address: "DExampleDogecoinAddress"
+                                  chainType: "dogecoin"
+                                - name: "Ton Label"
+                                  note: "Label for Ton address"
+                                  address: "0:EXAMPLETONADDRESS"
+                                  chainType: "ton"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+        post:
+            tags:
+                - Labels
+            summary: Create labels for the user
+            description: |
+                Creates one or more labels for the authenticated user.
+                Each label must include:
+                - **name**: A string (maximum 256 characters)
+                - **note**: A string (maximum 1024 characters)
+                - **address**: The label's address
+                - **chainType**: The type of the chain (e.g., "evm", "bitcoin", "tron", "solana", "dogecoin", "ton")
+            security:
+                - ApiKeyAuth: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: array
+                            items:
+                                $ref: "#/components/schemas/LabelInput"
+                        example:
+                            - name: "Ethereum Label"
+                              note: "Label for Ethereum address"
+                              address: "0xABCDEF1234567890"
+                              chainType: "evm"
+                            - name: "Bitcoin Label"
+                              note: "Label for Bitcoin address"
+                              address: "bc1qexamplebitcoinaddress"
+                              chainType: "bitcoin"
+                            - name: "Tron Label"
+                              note: "Label for Tron address"
+                              address: "TExampleTronAddress"
+                              chainType: "tron"
+                            - name: "Solana Label"
+                              note: "Label for Solana address"
+                              address: "ExampleSolanaAddressBase58"
+                              chainType: "solana"
+                            - name: "Dogecoin Label"
+                              note: "Label for Dogecoin address"
+                              address: "DExampleDogecoinAddress"
+                              chainType: "dogecoin"
+                            - name: "Ton Label"
+                              note: "Label for Ton address"
+                              address: "0:EXAMPLETONADDRESS"
+                              chainType: "ton"
+            responses:
+                "200":
+                    description: Successfully created labels.
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/Label"
+                            example:
+                                - name: "Ethereum Label"
+                                  note: "Label for Ethereum address"
+                                  address: "0xABCDEF1234567890"
+                                  chainType: "evm"
+                                - name: "Bitcoin Label"
+                                  note: "Label for Bitcoin address"
+                                  address: "bc1qexamplebitcoinaddress"
+                                  chainType: "bitcoin"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+        delete:
+            tags:
+                - Labels
+            summary: Delete multiple user labels
+            description: |
+                Deletes multiple labels for the authenticated user.
+                The **labels** query parameter should be a comma-separated list of label identifiers,
+                where each identifier is in the format **address:chainType**.
+                For example: `"0xABCDEF1234567890:evm,bc1qexamplebitcoinaddress:bitcoin"`.
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: labels
+                  in: query
+                  required: true
+                  schema:
+                      type: string
+                  description: A comma-separated list of label identifiers to delete.
+            responses:
+                "200":
+                    description: Successfully deleted the specified labels.
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+
+        /user/labels/{address}:
+            put:
+                tags:
+                    - Labels
+                summary: Update a user label
+                description: |
+                    Updates an existing label for the authenticated user.
+                    The label to update is identified by the **address** provided in the URL,
+                    which must include the chain type appended after a colon (e.g., `"0xABCDEF1234567890:evm"`).
+                    The request body should include the updated **name**, **note**, **address**, and **chainType**.
+                security:
+                    - ApiKeyAuth: []
+                parameters:
+                    - name: address
+                      in: path
+                      required: true
+                      schema:
+                          type: string
+                      description: >
+                          The address of the label to update with its chain type appended using a colon.
+                          Example: `"0xABCDEF1234567890:evm"`.
+                requestBody:
+                    required: true
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/LabelInput"
+                            example:
+                                name: "Updated Ethereum Label"
+                                note: "Updated note for Ethereum label."
+                                address: "0xABCDEF1234567890"
+                                chainType: "evm"
+                responses:
+                    "200":
+                        description: Successfully updated the label.
+                        content:
+                            application/json:
+                                schema:
+                                    $ref: "#/components/schemas/Label"
+                                example:
+                                    name: "Updated Ethereum Label"
+                                    note: "Updated note for Ethereum label."
+                                    address: "0xABCDEF1234567890"
+                                    chainType: "evm"
+                    "400":
+                        $ref: "#/components/responses/BadRequest"
+                    "401":
+                        $ref: "#/components/responses/Unauthorized"
+            delete:
+                tags:
+                    - Labels
+                summary: Delete a user label
+                description: |
+                    Deletes a specific label for the authenticated user.
+                    The label is identified by the **address** path parameter which includes the chain type.
+                    Example format: `"0xABCDEF1234567890:evm"`.
+                security:
+                    - ApiKeyAuth: []
+                parameters:
+                    - name: address
+                      in: path
+                      required: true
+                      schema:
+                          type: string
+                      description: >
+                          The label address with chain type appended using a colon.
+                          Example: `"0xABCDEF1234567890:evm"`.
+                responses:
+                    "200":
+                        description: Label deleted successfully.
+                    "400":
+                        $ref: "#/components/responses/BadRequest"
+                    "401":
+                        $ref: "#/components/responses/Unauthorized"
+
+    /flow/address/{address}:
+        get:
+            tags:
+                - Flow
+            summary: Get USD flow data for an address
+            description: |
+                Retrieves historical USD flow snapshots for the specified address across all supported chains.
+
+                **Flow data includes:**
+                - **Inflow**: USD value flowing into the address per time period
+                - **Outflow**: USD value flowing out of the address per time period
+                - **Cumulative flows**: Running totals of inflows and outflows over time
+
+                **Filter parameters:**
+                - **address**: The blockchain address to get flow data for. Can be a comma-separated list of addresses.
+                - **chains**: Optional comma-separated list of chains to filter results (e.g. "ethereum,bsc").
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: address
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: >
+                      The blockchain address or comma-separated list of addresses to get flow data for.
+                      For example: "0x123abc" or "0x123abc,0x456def".
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of chains to filter results.
+                      For example: "ethereum,bsc,polygon".
+                      If not provided, returns data for all supported chains.
+            responses:
+                "200":
+                    description: Flow data retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                description: A map where each key is a chain name and the value is an array of flow snapshots
+                                additionalProperties:
+                                    type: array
+                                    items:
+                                        $ref: "#/components/schemas/FlowSnapshot"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "500":
+                    description: Internal server error
+
+    /flow/entity/{entity}:
+        get:
+            tags:
+                - Flow
+            summary: Get USD flow data for an entity
+            description: |
+                Retrieves historical USD flow snapshots for the specified entity across all supported chains.
+
+                **Flow data includes:**
+                - **Inflow**: USD value flowing into the entity per time period
+                - **Outflow**: USD value flowing out of the entity per time period
+                - **Cumulative flows**: Running totals of inflows and outflows over time
+
+                **Entity types supported:**
+                - User entities (custom entities created by users)
+                - Arkham entities (pre-labeled entities in the Arkham database)
+
+                **Filter parameters:**
+                - **entity**: The entity ID to get flow data for
+                - **chains**: Optional comma-separated list of chains to filter results (e.g. "ethereum,bsc").
+            security:
+                - ApiKeyAuth: []
+            parameters:
+                - name: entity
+                  in: path
+                  required: true
+                  schema:
+                      type: string
+                  description: >
+                      The entity ID to get flow data for.
+                      Can be a user entity ID or an Arkham entity identifier.
+                - name: chains
+                  in: query
+                  schema:
+                      type: string
+                  description: >
+                      Comma-separated list of chains to filter results.
+                      For example: "ethereum,bsc,polygon".
+                      If not provided, returns data for all supported chains.
+            responses:
+                "200":
+                    description: Flow data retrieved successfully
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+                                description: A map where each key is a chain name and the value is an array of flow snapshots
+                                additionalProperties:
+                                    type: array
+                                    items:
+                                        $ref: "#/components/schemas/FlowSnapshot"
+                "400":
+                    $ref: "#/components/responses/BadRequest"
+                "401":
+                    $ref: "#/components/responses/Unauthorized"
+                "500":
+                    description: Internal server error
+
+    components:
+        schemas:
+            Label:
+                type: object
+                properties:
+                    name:
+                        type: string
+                    note:
+                        type: string
+                    address:
+                        type: string
+                    chainType:
+                        type: string
+                required:
+                    - name
+                    - address
+                    - chainType
+            LabelInput:
+                type: object
+                properties:
+                    name:
+                        type: string
+                        maxLength: 256
+                    note:
+                        type: string
+                        maxLength: 1024
+                    address:
+                        type: string
+                    chainType:
+                        type: string
+                required:
+                    - name
+                    - address
+                    - chainType
+            FlowSnapshot:
+                type: object
+                properties:
+                    time:
+                        type: string
+                        format: date-time
+                        description: The timestamp for this flow snapshot
+                    inflow:
+                        type: number
+                        description: USD value flowing into the address/entity during this time period
+                    outflow:
+                        type: number
+                        description: USD value flowing out of the address/entity during this time period
+                    cumulativeInflow:
+                        type: number
+                        description: Running total of USD inflows up to this time
+                    cumulativeOutflow:
+                        type: number
+                        description: Running total of USD outflows up to this time
+                description: Snapshot of flow data for a given time period
+        responses:
+            BadRequest:
+                description: Bad request.
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    type: string
+            Unauthorized:
+                description: Unauthorized.
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                message:
+                                    type: string
+        securitySchemes:
+            ApiKeyAuth:
+                type: apiKey
+                in: header
+                name: API-Key

@@ -1,0 +1,84 @@
+0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24	1	Uniswap UniswapV2Router02	Hot	uniswap	5
+0x10f7835f827d6cf035115e10c50a853d7fb2d2ec	1	Circle TokenMinter	Hot	circle	5
+0xa01aa2196724a39290f465b3925e5dcafe7f2256	1	Bitso 	Hot	bitso	5
+0x51c72848c68a965f66fa7a88855f9f7784502a7f	1	Wintermute Market Maker	Hot	wintermute	5
+0xeae7380dd4cef6fbd1144f49e4d1e6964258a4f4	1	Wintermute Binance Deposit	Hot	wintermute	3
+0x3a61da6d37493e2f248a6832f49b52af0a6f4fbb	1	Cumberland DRW Forwarder Factory	Hot	cumberland	5
+0xaf5af429cbfc2ea578851ca1a3191f2311fc1f63	1	Cumberland DRW Forwarder	Hot	cumberland	5
+0xf002647515aa0767a8b065fcab3cdc714675b861	1	Cumberland DRW Forwarder	Hot	cumberland	5
+0xab6927491de09d0289d642bc6113c4cf9d399893	1	Cumberland DRW Forwarder	Hot	cumberland	5
+0x9aae7342aeaaa02fbb8bf91bb7941f062359083c	1	Cumberland DRW Forwarder	Hot	cumberland	5
+0x210b3cb99fa1de0a64085fa80e18c22fe4722a1b	1	Kraken 	Hot	kraken	5
+0xd4039ecc40aeda0582036437cf3ec02845da4c13	1	Kraken Eth2 Staking	Hot	kraken	5
+0x724dc807b04555b71ed48a6896b6f41593b8c637	1	Aave Aave Arbitrum USDCn (AARBUSDCN)	Hot	aave	5
+0x625e7708f30ca75bfd92586e17077590c60eb4cd	1	Aave Aave Avalanche USDC (aAvaUSDC)	Hot	aave	5
+0x98c23e9d8f34fefb1b7bd6a91b7ff122f4e16f5c	1	Aave Aave Ethereum USDC (aEthUSDC)	Hot	aave	5
+0x4e65fe4dba92790696d040ac24aa414708f5c0ab	1	Aave OpenSea User	Hot	aave	5
+0xadc0a53095a0af87f3aa29fe0715b5c28016364e	1	Aave ParaSwapLiquiditySwapAdapter	Hot	aave	5
+0x578ee1ca3a8e1b54554da1bf7c583506c4cd11c6	1	Aave Aave Sonic USDC (ASONUSDC)	Hot	aave	5
+0xf3c3f14dd7bdb7e03e6ebc3bc5ffc6d66de12251	1	Aave ParaSwapLiquiditySwapAdapter	Hot	aave	5
+0x35bb522b102326ea3f1141661df4626c87000e3e	1	Aave ParaSwapRepayAdapter	Hot	aave	5
+0xd7852e139a7097e119623de0751ae53a61efb442	1	Aave ParaSwapDebtSwapAdapterV3GHO	Hot	aave	5
+0xc4aff49fced8ac1d818a6dcab063f9f97e66ec5e	1	Aave ParaSwapLiquiditySwapAdapter	Hot	aave	5
+0xd4fa2d31b7968e448877f69a96de69f5de8cd23e	1	Aave Wrapped Aave Ethereum USDC (WAETHUSDC)	Hot	aave	5
+0x23878914efe38d27c4d67ab83ed1b93a74d4086a	1	Aave Aave Ethereum USDT (aEthUSDT)	Hot	aave	5
+0x7bc3485026ac48b6cf9baf0a377477fff5703af8	1	Aave Wrapped Aave Ethereum USDT (WAETHUSDT)	Hot	aave	5
+0x6ab707aca953edaefbc4fd23ba73294241490620	1	Aave Aave Avalanche USDT (aAvaUSDT)	Hot	aave	5
+0xd01607c3c5ecaba394d8be377a08590149325722	1	Aave WrappedTokenGatewayV3	Hot	aave	5
+0x3154cf16ccdb4c6d922629664174b904d80f2c35	1	Base L1 Standard Bridge	Hot	base	5
+0x866e82a600a1414e583f7f13623f1ac5d58b0afa	1	Base L1 Cross Domain Messenger	Hot	base	5
+0x225a38bc71102999dd13478bfabd7c4d53f2dc17	1	Rizzolver (Wintermute) UniswapX	Hot	wintermute	5
+0x84b38bc60f3bd82640ecefa320dab2be62e2da15	1	Wintermute Kraken Deposit	Hot	wintermute	3
+0xed89da9dd83a0d703991ee833969489278b260e7	1	Jump Crypto Binance Deposit	Hot	gate-io	3
+0x1491546bac8be23060a395e0c246d013521997e6	1	 Bybit Deposit	Hot	gate-io	3
+0x32d4703e5834f1b474b17dfdb0ac32cc22575145	1	Wintermute Crypto.com Deposit	Hot	wintermute	3
+0x77f7b398a23ef4cab31dd5503fd8446c4480c70b	1	Wintermute Bitfinex Deposit	Hot	wintermute	3
+0x6455327f820edd69c4cd665b995e0fec679d7f9e	1	Wintermute Gate.io Deposit	Hot	wintermute	3
+0x1522900b6dafac587d499a862861c0869be6e428	1	Bitstamp MultiSig	Hot	bitstamp	5
+0xa9c61fe59b5702b1d382fd1d5e495887ff34c21d	1	 Binance Deposit	Hot	gate-io	3
+0xf584f8728b874a6a5c7a8d4d387c9aae9172d621	1	Jump Crypto 	Hot	gate-io	5
+0x00dad40510a882b634c06bc46b4d62b7aa136cd9	1	 CEX.IO Deposit	Hot	gate-io	3
+0x7f030dded85c2672a84b3b33528f57babbdcf7e4	1	 Bullish.com Deposit	Hot	gate-io	3
+0x59c467367bc0090495f597a7bd28c92539d9ccbd	1	Cumberland DRW Forwarder	Hot	cumberland	5
+0x5f397b62502e255f68382791947d54c4b2d37f09	1	Deribit 	Hot	deribit	5
+0x95dbb3c7546f22bce375900abfdd64a4e5bd73d6	1	Uniswap V3 Pool	Hot	uniswap	5
+0x88e6a0c2ddd26feeb64f039a2c41296fcb3f5640	1	Uniswap USDC 3	Hot	uniswap	5
+0xe0554a476a092703abdb3ef35c80e0d76d32939f	1	Uniswap USDC 4	Hot	uniswap	5
+0x66a9893cc07d91d95644aedd05d03f95e1dba8af	1	Uniswap UniversalRouter	Hot	uniswap	5
+0x000000000004444c5dc75cb358380d2e3de08a90	1	Uniswap PoolManager	Hot	uniswap	5
+0xc6962004f452be9203591991d15f6b388e09e8d0	1	Uniswap V3 Pool	Hot	uniswap	5
+0xd0b53d9277642d899df5c87a3966a349a798f224	1	Uniswap V3 Pool	Hot	uniswap	5
+0x3416cf6c708da44db2624d63ea0aaef7113527c6	1	Uniswap USDC-USDT 4	Hot	uniswap	5
+0xc36442b4a4522e871399cd717abdd847ab11fe88	1	Uniswap Positions NFT	Hot	uniswap	5
+0xbe3ad6a5669dc0b8b12febc03608860c31e2eef6	1	Uniswap V3 Pool	Hot	uniswap	5
+0x037818b04ac34ea8b54b6683b79ef24d23c0e7cb	1	Uniswap V3 Pool	Hot	uniswap	5
+0x4e665157291dbcb25152ebb01061e4012f58add2	1	Uniswap V3 Pool	Hot	uniswap	5
+0xcfd41df89d060b72ebdd50d65f9021e4457c477e	1	Uniswap V3 Pool	Hot	uniswap	5
+0xcc6d2f26d363836f85a42d249e145ec0320d3e55	1	Uniswap V3 Pool	Hot	uniswap	5
+0x13394005c1012e708fce1eb974f1130fdc73a5ce	1	Uniswap V3 Pool	Hot	uniswap	5
+0xfbb6eed8e7aa03b138556eedaf5d271a5e1e43ef	1	Uniswap V3 Pool	Hot	uniswap	5
+0xb50a1f651a5acb2679c8f679d782c728f3702e53	1	Uniswap V3 Pool	Hot	uniswap	5
+0x0e4831319a50228b9e450861297ab92dee15b44f	1	Uniswap V3 Pool	Hot	uniswap	5
+0x9a772018fbd77fcd2d25657e5c547baff3fd7d16	1	Uniswap WBTC-USDC 2	Hot	uniswap	5
+0xd36ec33c8bed5a9f7b6630855f1533455b98a418	1	Uniswap V3 Pool	Hot	uniswap	5
+0x99ac8ca7087fa4a2a1fb6357269965a2014abc35	1	Uniswap WBTC-USDC	Hot	uniswap	5
+0x8ad599c3a0ff1de082011efddc58f1908eb6e6d8	1	Uniswap USDC 2	Hot	uniswap	5
+0x498581ff718922c3f8e6a244956af099b2652b2b	1	Uniswap PoolManager	Hot	uniswap	5
+0xe7ed1fa7f45d05c508232aa32649d89b73b8ba48	1	Circle TokenMinter	Hot	circle	5
+0xc4922d64a24675e16e1586e3e3aa56c06fabe907	1	Circle Token Minter	Hot	circle	5
+0x65c340eb0688d8f8b64e9c6d580f312a97b615d8	1	OKX 	Hot	okx	5
+0xc7bbec68d12a0d1830360f8ec58fa599ba1b0e9b	1	Uniswap V3 Pool	Hot	uniswap	5
+0x11b815efb8f581194ae79006d24e0d814b7697f6	1	Uniswap USDT	Hot	uniswap	5
+0x4e68ccd3e89f51c3074ca5072bbac773960dfa36	1	Uniswap USDT	Hot	uniswap	5
+0x7eb59373d63627be64b42406b108b602174b4ccc	1	Uniswap V3 Pool	Hot	uniswap	5
+0x48da0965ab2d2cbf1c17c09cfb5cbe67ad5b1406	1	Uniswap V3 Pool	Hot	uniswap	5
+0x0f7384cfdfe67f1a70475dddca3656aab120454f	1	Uniswap V3 Pool	Hot	uniswap	5
+0x9db9e0e53058c89e5b94e29621a205198648425b	1	Uniswap WBTC-USDT	Hot	uniswap	5
+0x61edcdf5bb737adffe5043706e7c5bb1f1a56eea	1	Gemini Cold Wallet	Hot	gemini	1
+0x420f5035fd5dc62a167e7e7f08b604335ae272b8	1	Circle Token Minter	Hot	circle	5
+0xe45b133ddc64be80252b0e9c75a8e74ef280eed6	1	Circle TokenMinter	Hot	circle	5
+0xf5e10380213880111522dd0efd3dbb45b9f62bcc	1	Chainflip Vault	Hot	chainflip	5
+0x57e2dcd253527a0f70c6a3de3556f6e6e163f19c	1	OKX Proxy (EIP-1167 Minimal)	Hot	okx	5
+0x011a61c07dbf256a68256b1cb51a5e246730ab92	1	Coinbase MagicSpend	Hot	coinbase	5
+0x2cc5146929a893d1d73bc34fb37815cc1a44ae33	1	Coinbase Circle Deposit	Hot	coinbase	3
+0xedc7001e99a37c3d23b5f7974f837387e09f9c93	1	Coinbase Deposit	Hot	coinbase	3

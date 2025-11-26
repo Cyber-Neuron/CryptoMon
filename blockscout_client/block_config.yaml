@@ -1,0 +1,2 @@
+project_name_override: blockscout-client
+package_name_override: blockscout_client

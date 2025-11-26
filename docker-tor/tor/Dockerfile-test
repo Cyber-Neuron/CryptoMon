@@ -1,0 +1,31 @@
+FROM alpine:3.21.3@sha256:a8560b36e8b8210634f77d9f7f9efd7ffa463e380b75e2e74aff4511df3ef88c
+
+HEALTHCHECK NONE
+
+ENTRYPOINT []
+
+ARG USER_NAME=default
+ARG USER_HOME=/home/default
+ARG USER_ID=1000
+ARG USER_GECOS=Default
+
+SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
+
+# hadolint ignore=DL3018
+RUN apk add --no-cache curl
+
+RUN adduser \
+  --home "${USER_HOME}" \
+  --uid "${USER_ID}" \
+  --gecos "${USER_GECOS}" \
+  --disabled-password \
+  "${USER_NAME}"
+
+ENV HOME="${USER_HOME}"
+
+USER "${USER_NAME}"
+
+WORKDIR "${HOME}"
+
+# sleep 60s to make sure that container survived its own healthcheck
+CMD ["/bin/ash", "-euo", "pipefail", "-c", "/bin/sleep 60 ; /usr/bin/curl -i -s -S -f --socks5 tor:9050 --socks5-hostname tor:9050 https://check.torproject.org/api/ip"]

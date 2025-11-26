@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  tor:
+    build:
+      context: ./docker-tor/tor
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:9050:9050"
+    environment:
+      - SOCKS_HOSTNAME=0.0.0.0
+      - SOCKS_PORT=9050
+      - LOG_LEVEL=notice
+      - DATA_DIRECTORY=/var/lib/tor
+    volumes:
+      - ./torrc:/etc/tor/torrc
+    healthcheck:
+      test: ["CMD", "curl", "--socks5", "localhost:9050", "--socks5-hostname", "localhost:9050", "https://check.torproject.org/api/ip"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  python-app:
+    build:
+      context: ./python-app
+    depends_on:
+      tor:
+        condition: service_healthy
+    environment:
+      - TOR_PROXY=socks5h://tor:9050
+      - PYTHONUNBUFFERED=1
+      - ALL_PROXY=socks5://tor:9050
+    network_mode: service:tor
+    volumes:
+      - ./python-app:/app 

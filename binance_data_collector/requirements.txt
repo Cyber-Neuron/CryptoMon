@@ -1,0 +1,6 @@
+python-binance
+requests
+pandas
+websocket-client
+pyyaml 
+binance-futures-connector

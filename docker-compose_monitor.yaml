@@ -1,0 +1,50 @@
+version: "3.9"
+
+services:
+  python-ssh:
+    build:
+      context: ./docker_conifg/
+      dockerfile: Dockerfile
+    container_name: python-ssh
+    ports:
+      - "22122:22"
+    volumes:
+      - /share/workspace/docker_crypto:/home/cyber
+    user: root
+    restart: unless-stopped
+    entrypoint: >
+      bash -c "
+      chown -R cyber:cyber /home/cyber &&
+      mkdir -p /home/cyber/.ssh &&
+      chmod 700 /home/cyber/.ssh &&
+      touch /home/cyber/.ssh/authorized_keys &&
+      chmod 600 /home/cyber/.ssh/authorized_keys &&
+      chown -R cyber:cyber /home/cyber/.ssh &&
+      /usr/sbin/sshd -D
+      "
+    networks:
+      - shared_backend
+
+  tor:
+    build:
+      context: ./tor_config/docker-tor/tor
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:9050:9050"
+    environment:
+      - SOCKS_HOSTNAME=0.0.0.0
+      - SOCKS_PORT=9050
+      - LOG_LEVEL=notice
+      - DATA_DIRECTORY=/var/lib/tor
+    healthcheck:
+      test: ["CMD", "curl", "--socks5", "localhost:9050", "--socks5-hostname", "localhost:9050", "https://check.torproject.org/api/ip"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    networks:
+      - shared_backend
+
+networks:
+  shared_backend:
+    driver: bridge
+
