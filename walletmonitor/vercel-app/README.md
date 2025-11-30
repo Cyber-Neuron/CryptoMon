@@ -1,5 +1,149 @@
 # Flow Monitor
 
+A Web application for monitoring cryptocurrency capital flows.
+
+## Features
+
+### Dual Selectors
+
+* **Source Group (From)**: Select the group from which funds flow out
+* **Target Group (To)**: Select the group into which funds flow
+* Supports precise flow filtering, allowing you to view capital movements between specific groups
+
+### Main Features
+
+* Real-time capital flow charts
+* Multi-token support (ETH, USDC, USDT, etc.)
+* Time range selection (1 hour to 30 days)
+* ETH price overlay
+* Net inflow/outflow analysis
+* Display in Eastern Time (ET)
+
+## How to Use
+
+1. **Select Time Range**: Choose the desired range from the dropdown menu
+2. **Select Tokens**: Pick the tokens you want to monitor from the multi-select list
+3. **Set Flow Filters**:
+
+   * Select the group funds are flowing **from** under “Source Group”
+   * Select the group funds are flowing **to** under “Target Group”
+   * If no groups are selected, all flows will be displayed
+4. **View Results**: The chart will show all flows that match the selected criteria
+
+## Flow Filtering Logic
+
+* **Both From and To selected**: Only shows flows from the selected source to the selected target; all flows are treated as inflows (positive values)
+* **Only From selected**: Shows all funds flowing out from the selected source (negative values)
+* **Only To selected**: Shows all funds flowing into the selected target (positive values)
+* **Neither selected**: Shows all flows (compatible with default behavior; positive = inflow, negative = outflow)
+
+### Precise Flow Mode
+
+When a source group (From) or target group (To) is specified, the system enters **Precise Flow Mode**:
+
+* **All matched flows are shown as positive values**: Because the focus is the flow from A to B, not net inflow/outflow
+* **Chart color is unified to green**: Represents directional flows instead of in/out differences
+* **Net inflow/outflow sub-charts are hidden**: As the concept of outflow does not apply—only direction
+* **Tooltip displays “Capital Flow”**: Instead of “Inflow” or “Outflow”
+
+## Chart Description
+
+* **Main Chart**: Displays flow bar charts and ETH price line
+* **Net Outflow Chart**: Shows only outflows (negative values)
+* **Net Inflow Chart**: Shows only inflows (positive values)
+* **Tooltip**: Hover to view detailed flow information
+
+## Tech Stack
+
+* Next.js 15
+* React
+* Lightweight Charts
+* PostgreSQL
+* Tailwind CSS
+
+## Development
+
+```bash
+npm install
+npm run dev
+```
+
+## Build
+
+```bash
+npm run build
+```
+
+## Local Development
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Set environment variables:
+
+```bash
+# Create .env.local file
+DATABASE_URL=your_postgresql_connection_string
+```
+
+3. Start development server:
+
+```bash
+npm run dev
+```
+
+4. Visit [http://localhost:3000](http://localhost:3000)
+
+## Deploying to Vercel
+
+1. Push the code to a GitHub repository
+2. Import the project in Vercel
+3. Set environment variables:
+
+   * `DATABASE_URL`: PostgreSQL connection string
+4. Deploy the project
+
+## Database Schema
+
+The app uses the following database table:
+
+* `ex_flows`: Capital flow data
+
+  * `timestamp`: Timestamp
+  * `from_grp_name`: Source group name
+  * `to_grp_name`: Target group name
+  * `token`: Token symbol
+  * `amount`: Amount
+  * `usd_value`: USD value
+
+## API Endpoints
+
+* `GET /api/tokens` — Retrieve available token list
+* `GET /api/groups` — Retrieve available group list
+* `GET /api/flows` — Retrieve flow data (supports query parameters)
+* `POST /api/flows` — Retrieve flow data (supports request body)
+
+## Usage Instructions
+
+1. Select time range
+2. Select tokens to view (multi-select supported)
+3. Select groups to view (multi-select supported)
+4. The system will automatically load and display the corresponding flow charts
+5. Green bars represent inflows; red bars represent outflows
+
+## Notes
+
+* Ensure the database connection is functioning
+* SSL should be configured in production
+* Using a connection pool is recommended to improve database performance
+
+
+
+# Flow Monitor
+
 一个用于监控加密货币资金流向的Web应用程序。
 
 ## 功能特性
