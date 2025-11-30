@@ -1,183 +1,183 @@
-# ETF流向分析功能实现总结
+# ETF Flow Analysis Feature Implementation Summary
 
-## 🎯 功能概述
+## 🎯 Feature Overview
 
-成功在vercel-app中实现了完整的ETF流向分析功能，包含三个核心部分：
+Successfully implemented complete ETF flow analysis functionality in vercel-app, containing three core parts:
 
-1. **宏观事件标记** - 美联储议息、非农、CPI等关键事件
-2. **ETF净流入数据** - ETH/BTC的ETF流向数据
-3. **价格K线图** - 币安实时价格数据
-4. **可视化分析** - 组合图表展示关联性
+1. **Macro Event Markers** - Key events such as Fed meetings, non-farm payroll, CPI
+2. **ETF Net Inflow Data** - ETF flow data for ETH/BTC
+3. **Price Candlestick Charts** - Real-time price data from Binance
+4. **Visualization Analysis** - Combined chart display showing correlations
 
-## 📁 文件结构
+## 📁 File Structure
 
 ```
 walletmonitor/vercel-app/
 ├── app/
 │   ├── etf/
-│   │   └── page.jsx              # ETF分析页面
+│   │   └── page.jsx              # ETF analysis page
 │   └── api/
 │       └── etf-data/
-│           └── route.js          # ETF数据API
+│           └── route.js          # ETF data API
 ├── components/
-│   └── ETFChart.jsx             # ETF图表组件
-├── ETF_README.md                # 功能说明文档
-├── ETF_IMPLEMENTATION_SUMMARY.md # 实现总结
-└── test-etf.js                  # 功能测试脚本
+│   └── ETFChart.jsx             # ETF chart component
+├── ETF_README.md                # Feature documentation
+├── ETF_IMPLEMENTATION_SUMMARY.md # Implementation summary
+└── test-etf.js                  # Feature test script
 ```
 
-## 🚀 核心功能
+## 🚀 Core Features
 
-### 1. ETF分析页面 (`/etf`)
-- **资产选择**: ETH/BTC切换
-- **时间范围**: 6个月/1年/2年
-- **实时数据**: 自动刷新和加载状态
-- **响应式设计**: 适配不同屏幕尺寸
+### 1. ETF Analysis Page (`/etf`)
+- **Asset Selection**: ETH/BTC switching
+- **Time Range**: 6 months/1 year/2 years
+- **Real-time Data**: Auto-refresh and loading states
+- **Responsive Design**: Adapts to different screen sizes
 
-### 2. ETF图表组件
-- **K线图**: 使用lightweight-charts库
-- **ETF柱状图**: 净流入/流出可视化
-- **事件标记**: 宏观事件垂直标记线
-- **统计面板**: 关键数据指标展示
+### 2. ETF Chart Component
+- **Candlestick Chart**: Uses lightweight-charts library
+- **ETF Bar Chart**: Net inflow/outflow visualization
+- **Event Markers**: Macro event vertical marker lines
+- **Statistics Panel**: Key data indicators display
 
-### 3. 数据API (`/api/etf-data`)
-- **真实数据源**: Farside.co.uk + 币安API
-- **备用方案**: 模拟数据生成
-- **错误处理**: 完善的参数验证
-- **性能优化**: 数据过滤和缓存
+### 3. Data API (`/api/etf-data`)
+- **Real Data Source**: Farside.co.uk + Binance API
+- **Fallback Solution**: Simulated data generation
+- **Error Handling**: Comprehensive parameter validation
+- **Performance Optimization**: Data filtering and caching
 
-## 📊 数据源
+## 📊 Data Sources
 
-### ETF数据
-- **主要源**: Farside.co.uk API
-- **备用源**: 模拟数据生成
-- **数据格式**: 每日净流入/流出量
+### ETF Data
+- **Primary Source**: Farside.co.uk API
+- **Fallback Source**: Simulated data generation
+- **Data Format**: Daily net inflow/outflow
 
-### 价格数据
-- **源**: 币安公共API
-- **周期**: 日K线数据
-- **字段**: OHLCV完整数据
+### Price Data
+- **Source**: Binance public API
+- **Period**: Daily candlestick data
+- **Fields**: Complete OHLCV data
 
-### 宏观事件
-- **FOMC**: 美联储议息会议
-- **NonFarm**: 非农就业数据
-- **CPI**: 消费者物价指数
-- **时间范围**: 过去一年关键事件
+### Macro Events
+- **FOMC**: Federal Reserve interest rate meetings
+- **NonFarm**: Non-farm payroll data
+- **CPI**: Consumer Price Index
+- **Time Range**: Key events from the past year
 
-## 🎨 用户界面
+## 🎨 User Interface
 
-### 控制面板
-- 资产选择下拉框
-- 时间范围选择
-- 刷新按钮
-- 加载状态指示
+### Control Panel
+- Asset selection dropdown
+- Time range selection
+- Refresh button
+- Loading state indicator
 
-### 图表展示
-- 主K线图区域
-- ETF净流入柱状图
-- 宏观事件标记线
-- 统计信息卡片
+### Chart Display
+- Main candlestick chart area
+- ETF net inflow bar chart
+- Macro event marker lines
+- Statistics information cards
 
-### 图例说明
-- 图表元素说明
-- 事件类型说明
-- 颜色编码说明
+### Legend
+- Chart element descriptions
+- Event type descriptions
+- Color coding descriptions
 
-## 🔧 技术实现
+## 🔧 Technical Implementation
 
-### 前端技术栈
-- **Next.js 15**: React框架
-- **Tailwind CSS**: 样式框架
-- **Lightweight Charts**: 图表库
-- **ES6+**: 现代JavaScript
+### Frontend Tech Stack
+- **Next.js 15**: React framework
+- **Tailwind CSS**: Styling framework
+- **Lightweight Charts**: Chart library
+- **ES6+**: Modern JavaScript
 
-### 后端技术栈
-- **Next.js API Routes**: 后端API
-- **Fetch API**: 数据获取
-- **JSON**: 数据格式
+### Backend Tech Stack
+- **Next.js API Routes**: Backend API
+- **Fetch API**: Data fetching
+- **JSON**: Data format
 
-### 数据流程
-1. 用户选择参数
-2. 前端调用API
-3. 后端获取外部数据
-4. 数据处理和格式化
-5. 返回给前端
-6. 图表渲染展示
+### Data Flow
+1. User selects parameters
+2. Frontend calls API
+3. Backend fetches external data
+4. Data processing and formatting
+5. Returns to frontend
+6. Chart rendering and display
 
-## ✅ 测试验证
+## ✅ Test Verification
 
-### 功能测试
-- ✅ ETH数据获取
-- ✅ BTC数据获取
-- ✅ 错误参数处理
-- ✅ API响应格式
-- ✅ 页面访问正常
+### Functionality Tests
+- ✅ ETH data fetching
+- ✅ BTC data fetching
+- ✅ Error parameter handling
+- ✅ API response format
+- ✅ Page access normal
 
-### 性能测试
-- ✅ 数据加载速度
-- ✅ 图表渲染性能
-- ✅ 响应式适配
-- ✅ 错误恢复机制
+### Performance Tests
+- ✅ Data loading speed
+- ✅ Chart rendering performance
+- ✅ Responsive adaptation
+- ✅ Error recovery mechanism
 
-## 🌟 特色功能
+## 🌟 Key Features
 
-### 1. 智能数据源切换
-- 优先使用真实数据
-- 自动降级到模拟数据
-- 无缝用户体验
+### 1. Smart Data Source Switching
+- Prioritizes real data
+- Automatically falls back to simulated data
+- Seamless user experience
 
-### 2. 丰富的事件标记
-- 12个关键宏观事件
-- 垂直标记线显示
-- 事件类型说明
+### 2. Rich Event Markers
+- 12 key macro events
+- Vertical marker line display
+- Event type descriptions
 
-### 3. 详细统计信息
-- 总ETF净流入
-- 最大单日流入/流出
-- 宏观事件数量
-- 数据源标识
+### 3. Detailed Statistics
+- Total ETF net inflow
+- Maximum single-day inflow/outflow
+- Number of macro events
+- Data source identification
 
-### 4. 响应式设计
-- 移动端适配
-- 桌面端优化
-- 图表自适应
+### 4. Responsive Design
+- Mobile adaptation
+- Desktop optimization
+- Chart auto-adaptation
 
-## 🔗 导航集成
+## 🔗 Navigation Integration
 
-在主页面添加了导航链接：
-- 资金流向监控 (主页)
-- **ETF流向分析** (新功能)
-- 交易记录
-- 交易图表
+Added navigation links on main page:
+- Fund Flow Monitor (home page)
+- **ETF Flow Analysis** (new feature)
+- Transaction Records
+- Transaction Chart
 
-## 📈 使用方式
+## 📈 Usage
 
-1. 访问 `http://localhost:3000/etf`
-2. 选择资产类型 (ETH/BTC)
-3. 选择时间范围 (6m/1y/2y)
-4. 查看图表和统计信息
-5. 分析宏观事件影响
+1. Visit `http://localhost:3000/etf`
+2. Select asset type (ETH/BTC)
+3. Select time range (6m/1y/2y)
+4. View charts and statistics
+5. Analyze macro event impacts
 
-## 🎯 实现效果
+## 🎯 Implementation Results
 
-- ✅ 完整的ETF分析功能
-- ✅ 美观的用户界面
-- ✅ 稳定的数据获取
-- ✅ 良好的用户体验
-- ✅ 完善的错误处理
-- ✅ 详细的文档说明
+- ✅ Complete ETF analysis functionality
+- ✅ Beautiful user interface
+- ✅ Stable data fetching
+- ✅ Good user experience
+- ✅ Comprehensive error handling
+- ✅ Detailed documentation
 
-## 🔮 未来扩展
+## 🔮 Future Extensions
 
-1. **更多数据源**: 添加其他ETF数据提供商
-2. **技术指标**: 添加MA、RSI等技术指标
-3. **事件分析**: 自动分析事件对价格的影响
-4. **数据导出**: 支持CSV/Excel导出
-5. **实时更新**: WebSocket实时数据推送
+1. **More Data Sources**: Add other ETF data providers
+2. **Technical Indicators**: Add MA, RSI and other technical indicators
+3. **Event Analysis**: Automatically analyze event impact on prices
+4. **Data Export**: Support CSV/Excel export
+5. **Real-time Updates**: WebSocket real-time data push
 
 ---
 
-**实现完成时间**: 2024年7月29日  
-**技术栈**: Next.js + React + Tailwind CSS + Lightweight Charts  
-**数据源**: Farside.co.uk + Binance API  
-**状态**: ✅ 功能完整，测试通过 
+**Implementation Completion Date**: July 29, 2024  
+**Tech Stack**: Next.js + React + Tailwind CSS + Lightweight Charts  
+**Data Sources**: Farside.co.uk + Binance API  
+**Status**: ✅ Feature complete, tests passed

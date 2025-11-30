@@ -1,52 +1,52 @@
-# 🎤 Google TTS 语音提醒系统
+# 🎤 Google TTS Voice Alert System
 
-## 📋 功能特点
+## 📋 Features
 
-- ✅ **高质量语音** - 使用Google TTS，声音自然清晰
-- ✅ **中文支持** - 完美支持中文语音合成
-- ✅ **跨平台** - 支持Windows、macOS、Linux
-- ✅ **易于集成** - 简单的API，易于集成到现有系统
-- ✅ **错误处理** - 完善的错误处理和回退机制
+- ✅ **High Quality Voice** - Uses Google TTS, natural and clear voice
+- ✅ **Chinese Support** - Perfect support for Chinese voice synthesis
+- ✅ **Cross Platform** - Supports Windows, macOS, Linux
+- ✅ **Easy Integration** - Simple API, easy to integrate into existing systems
+- ✅ **Error Handling** - Comprehensive error handling and fallback mechanism
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 1. 安装依赖
+### 1. Install Dependencies
 
 ```bash
 pip install gTTS
 ```
 
-### 2. 基本使用
+### 2. Basic Usage
 
 ```python
 from alert import TradingAlert
 
-# 创建提醒系统
+# Create alert system
 alert = TradingAlert()
 
-# 发出交易提醒
+# Issue trading alerts
 alert.trading_alert("开空", "100万", "BTC")
 alert.trading_alert("开多", "50万", "ETH")
 alert.price_alert("BTC", "45000", "上涨")
 
-# 自定义提醒
+# Custom alerts
 alert.custom_alert("系统检测到异常交易")
 ```
 
-## 📖 API 文档
+## 📖 API Documentation
 
-### TradingAlert 类
+### TradingAlert Class
 
-#### 初始化参数
+#### Initialization Parameters
 
 ```python
 TradingAlert(lang='zh-cn', slow=False)
 ```
 
-- `lang` (str): 语言代码，默认中文 `'zh-cn'`
-- `slow` (bool): 是否慢速播放，默认 `False`
+- `lang` (str): Language code, default Chinese `'zh-cn'`
+- `slow` (bool): Whether to play slowly, default `False`
 
-#### 主要方法
+#### Main Methods
 
 ##### 1. trading_alert()
 
@@ -54,12 +54,12 @@ TradingAlert(lang='zh-cn', slow=False)
 trading_alert(action, amount, symbol="BTC", wait_time=2)
 ```
 
-交易提醒方法
+Trading alert method
 
-- `action` (str): 交易动作（"开空"、"开多"、"平仓"等）
-- `amount` (str): 交易金额
-- `symbol` (str): 交易对符号，默认"BTC"
-- `wait_time` (int): 等待播放完成的时间（秒）
+- `action` (str): Trading action ("开空", "开多", "平仓", etc.)
+- `amount` (str): Trading amount
+- `symbol` (str): Trading pair symbol, default "BTC"
+- `wait_time` (int): Wait time for playback completion (seconds)
 
 ##### 2. price_alert()
 
@@ -67,12 +67,12 @@ trading_alert(action, amount, symbol="BTC", wait_time=2)
 price_alert(symbol, price, direction, wait_time=2)
 ```
 
-价格提醒方法
+Price alert method
 
-- `symbol` (str): 交易对符号
-- `price` (str): 价格
-- `direction` (str): 价格方向（"上涨"、"下跌"等）
-- `wait_time` (int): 等待时间
+- `symbol` (str): Trading pair symbol
+- `price` (str): Price
+- `direction` (str): Price direction ("上涨", "下跌", etc.)
+- `wait_time` (int): Wait time
 
 ##### 3. custom_alert()
 
@@ -80,14 +80,14 @@ price_alert(symbol, price, direction, wait_time=2)
 custom_alert(message, wait_time=2)
 ```
 
-自定义提醒方法
+Custom alert method
 
-- `message` (str): 自定义消息
-- `wait_time` (int): 等待时间
+- `message` (str): Custom message
+- `wait_time` (int): Wait time
 
-## 🎯 使用示例
+## 🎯 Usage Examples
 
-### 示例1：基本交易监控
+### Example 1: Basic Trading Monitoring
 
 ```python
 from alert import TradingAlert
@@ -95,23 +95,23 @@ import time
 
 alert = TradingAlert()
 
-# 监控大额交易
+# Monitor large trades
 def monitor_large_trades():
-    # 检测到开空
+    # Detected short position
     alert.trading_alert("开空", "500万", "BTC")
     time.sleep(2)
     
-    # 检测到开多
+    # Detected long position
     alert.trading_alert("开多", "300万", "ETH")
     time.sleep(2)
     
-    # 价格突破
+    # Price breakout
     alert.price_alert("BTC", "45000", "突破")
 
 monitor_large_trades()
 ```
 
-### 示例2：集成到现有监控系统
+### Example 2: Integrate into Existing Monitoring System
 
 ```python
 from alert import TradingAlert
@@ -121,16 +121,16 @@ class YourTradingMonitor:
         self.alert = TradingAlert()
     
     def on_large_trade_detected(self, trade_data):
-        """检测到大额交易时的回调"""
+        """Callback when large trade detected"""
         action = trade_data['action']
         amount = trade_data['amount']
         symbol = trade_data['symbol']
         
-        # 发出语音提醒
+        # Issue voice alert
         self.alert.trading_alert(action, amount, symbol)
     
     def on_price_alert(self, price_data):
-        """价格提醒回调"""
+        """Price alert callback"""
         symbol = price_data['symbol']
         price = price_data['price']
         direction = price_data['direction']
@@ -138,92 +138,92 @@ class YourTradingMonitor:
         self.alert.price_alert(symbol, price, direction)
 ```
 
-### 示例3：自定义提醒场景
+### Example 3: Custom Alert Scenarios
 
 ```python
 from alert import TradingAlert
 
 alert = TradingAlert()
 
-# 系统启动提醒
+# System startup alert
 alert.custom_alert("交易监控系统已启动")
 
-# 风险警告
+# Risk warning
 alert.custom_alert("检测到异常交易模式，请注意风险")
 
-# 系统状态
+# System status
 alert.custom_alert("系统运行正常，监控中")
 ```
 
-## 🔧 配置选项
+## 🔧 Configuration Options
 
-### 语言设置
+### Language Settings
 
 ```python
-# 中文（默认）
+# Chinese (default)
 alert = TradingAlert(lang='zh-cn')
 
-# 英文
+# English
 alert = TradingAlert(lang='en')
 
-# 日文
+# Japanese
 alert = TradingAlert(lang='ja')
 ```
 
-### 语速设置
+### Speech Rate Settings
 
 ```python
-# 正常语速
+# Normal speed
 alert = TradingAlert(slow=False)
 
-# 慢速（更清晰）
+# Slow speed (clearer)
 alert = TradingAlert(slow=True)
 ```
 
-## 🛠️ 故障排除
+## 🛠️ Troubleshooting
 
-### 1. 网络连接问题
+### 1. Network Connection Issues
 
-如果无法连接到Google TTS服务：
+If unable to connect to Google TTS service:
 
 ```python
-# 系统会自动回退到默认叮声
+# System will automatically fallback to default beep
 alert.custom_alert("测试消息")
-# 如果TTS失败，会播放系统默认的叮声
+# If TTS fails, will play system default beep
 ```
 
-### 2. 音频播放问题
+### 2. Audio Playback Issues
 
-确保系统有音频输出设备，并且音量已开启。
+Ensure system has audio output device and volume is turned on.
 
-### 3. 权限问题
+### 3. Permission Issues
 
-在某些系统上可能需要音频播放权限。
+Some systems may require audio playback permissions.
 
-## 📝 注意事项
+## 📝 Notes
 
-1. **网络依赖** - Google TTS需要网络连接
-2. **延迟** - 首次播放可能有短暂延迟（生成音频文件）
-3. **临时文件** - 系统会自动创建和删除临时音频文件
-4. **并发** - 不建议同时播放多个音频，可能会重叠
+1. **Network Dependency** - Google TTS requires network connection
+2. **Latency** - First playback may have brief delay (generating audio file)
+3. **Temporary Files** - System automatically creates and deletes temporary audio files
+4. **Concurrency** - Not recommended to play multiple audio simultaneously, may overlap
 
-## 🎵 支持的语音效果
+## 🎵 Supported Voice Effects
 
-- ✅ 中文语音（男声/女声）
-- ✅ 英文语音
-- ✅ 日文语音
-- ✅ 其他Google TTS支持的语言
+- ✅ Chinese voice (male/female)
+- ✅ English voice
+- ✅ Japanese voice
+- ✅ Other languages supported by Google TTS
 
-## 🔄 与现有系统集成
+## 🔄 Integration with Existing Systems
 
 ```python
-# 在你的交易监控代码中添加
+# Add to your trading monitoring code
 from alert import TradingAlert
 
-# 初始化
+# Initialize
 alert_system = TradingAlert()
 
-# 在检测到重要事件时调用
+# Call when important events detected
 if large_trade_detected:
     alert_system.trading_alert("开空", amount, symbol)
 
@@ -234,4 +234,4 @@ if system_error:
     alert_system.custom_alert("系统出现错误")
 ```
 
-现在你有了一个高质量的语音提醒系统，可以完美地集成到你的交易监控程序中！ 
+Now you have a high-quality voice alert system that can be perfectly integrated into your trading monitoring program!

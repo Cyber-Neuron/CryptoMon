@@ -1,32 +1,32 @@
 # Wallet Monitor Debug Mode
 
-这个文档说明如何使用walletmonitor的debug模式来观察逐条交易的处理细节。
+This document explains how to use walletmonitor's debug mode to observe transaction processing details.
 
-## 概述
+## Overview
 
-Debug模式提供了详细的日志信息，让您可以观察：
-- 每个区块的处理过程
-- 每笔交易的详细分析
-- ETH和ERC20代币转账的识别
-- 钱包信息的提取过程
-- 数据库存储操作
+Debug mode provides detailed log information, allowing you to observe:
+- Block processing procedures
+- Detailed analysis of each transaction
+- Identification of ETH and ERC20 token transfers
+- Wallet information extraction process
+- Database storage operations
 
-## 快速开始
+## Quick Start
 
-### 方法1: 使用Debug启动脚本（推荐）
+### Method 1: Use Debug Startup Script (Recommended)
 
 ```bash
-# 进入walletmonitor目录
+# Navigate to walletmonitor directory
 cd walletmonitor
 
-# 运行debug启动脚本
+# Run debug startup script
 ./start_debug.sh
 ```
 
-### 方法2: 直接运行debug主程序
+### Method 2: Run Debug Main Program Directly
 
 ```bash
-# 设置环境变量
+# Set environment variables
 export DEBUG_MODE=true
 export DEBUG_TRANSACTION_DETAILS=true
 export DEBUG_WALLET_INFO=true
@@ -34,44 +34,44 @@ export LOG_LEVEL=DEBUG
 export MIN_ETH=1.0
 export POLL_INTERVAL_SEC=30
 
-# 运行debug程序
+# Run debug program
 python3 debug_main.py
 ```
 
-### 方法3: 使用普通主程序但启用debug
+### Method 3: Use Regular Main Program with Debug Enabled
 
 ```bash
-# 设置debug环境变量
+# Set debug environment variables
 export DEBUG_MODE=true
 export DEBUG_TRANSACTION_DETAILS=true
 export DEBUG_WALLET_INFO=true
 export LOG_LEVEL=DEBUG
 
-# 运行普通主程序
+# Run regular main program
 python3 main.py
 ```
 
-## Debug配置选项
+## Debug Configuration Options
 
-### 环境变量
+### Environment Variables
 
-| 变量名 | 默认值 | 说明 |
-|--------|--------|------|
-| `DEBUG_MODE` | `true` | 启用debug模式 |
-| `DEBUG_TRANSACTION_DETAILS` | `true` | 显示交易处理详情 |
-| `DEBUG_WALLET_INFO` | `true` | 显示钱包信息提取详情 |
-| `LOG_LEVEL` | `DEBUG` | 日志级别 |
-| `MIN_ETH` | `1.0` | 最小ETH阈值（降低以看到更多交易） |
-| `POLL_INTERVAL_SEC` | `30` | 轮询间隔（秒） |
+| Variable Name | Default Value | Description |
+|---------------|---------------|-------------|
+| `DEBUG_MODE` | `true` | Enable debug mode |
+| `DEBUG_TRANSACTION_DETAILS` | `true` | Show transaction processing details |
+| `DEBUG_WALLET_INFO` | `true` | Show wallet information extraction details |
+| `LOG_LEVEL` | `DEBUG` | Log level |
+| `MIN_ETH` | `1.0` | Minimum ETH threshold (lower to see more transactions) |
+| `POLL_INTERVAL_SEC` | `30` | Polling interval (seconds) |
 
-### 配置文件
+### Configuration Files
 
-- `debug_config.py` - Debug专用配置
-- `config.py` - 标准配置（已添加debug选项）
+- `debug_config.py` - Debug-specific configuration
+- `config.py` - Standard configuration (debug options added)
 
-## Debug日志详解
+## Debug Log Details
 
-### 1. 启动信息
+### 1. Startup Information
 
 ```
 ====================================================================================================
@@ -86,7 +86,7 @@ Poll interval: 30 seconds
 ====================================================================================================
 ```
 
-### 2. 监控地址获取
+### 2. Monitoring Address Retrieval
 
 ```
 ============================================================
@@ -99,7 +99,7 @@ WATCH ADDRESSES:
 ============================================================
 ```
 
-### 3. 区块处理
+### 3. Block Processing
 
 ```
 Fetching recent blocks from last 10 minutes...
@@ -111,9 +111,9 @@ Target timestamp: 1703122856 (looking back 10 minutes)
     Added block 18500000 with 150 transactions
 ```
 
-### 4. 交易处理详情
+### 4. Transaction Processing Details
 
-#### ETH转账
+#### ETH Transfer
 
 ```
 Processing ETH transfer: 0xabcd...
@@ -132,7 +132,7 @@ Processing ETH transfer: 0xabcd...
     Amount: 1.0 ETH ($2500.00)
 ```
 
-#### ERC20转账
+#### ERC20 Transfer
 
 ```
 Processing ERC20 transfers for tx: 0xefgh...
@@ -149,7 +149,7 @@ Processing ERC20 transfers for tx: 0xefgh...
     Skipping: Amount below minimum threshold
 ```
 
-### 5. 钱包信息提取
+### 5. Wallet Information Extraction
 
 ```
 Extracting wallet info for address: 0x1234...
@@ -157,7 +157,7 @@ Arkham API response for 0x1234...: {'arkhamEntity': {'name': 'Binance Hot Wallet
 Created wallet info: Binance Hot Wallet (BINANCE) for 0x1234...
 ```
 
-### 6. 处理总结
+### 6. Processing Summary
 
 ```
 Processing 5 blocks with 10 watch addresses
@@ -179,68 +179,68 @@ Transaction summary:
   0xefgh...: Coinbase Hot Wallet -> Binance Hot Wallet (5000.0 USDT)
 ```
 
-## 日志文件
+## Log Files
 
-Debug模式会同时输出到：
-- 控制台（实时查看）
-- `debug.log` 文件（持久保存）
+Debug mode outputs to both:
+- Console (real-time viewing)
+- `debug.log` file (persistent storage)
 
-每次启动时会自动备份旧的 `debug.log` 为 `debug.log.bak`。
+Each startup automatically backs up the old `debug.log` as `debug.log.bak`.
 
-## 性能调优
+## Performance Tuning
 
-### 降低日志详细程度
+### Reduce Log Verbosity
 
-如果日志太多影响性能，可以调整：
+If logs are too verbose and affect performance, you can adjust:
 
 ```bash
-# 只显示交易详情，不显示钱包信息
+# Only show transaction details, not wallet info
 export DEBUG_WALLET_INFO=false
 
-# 只显示基本信息
+# Only show basic information
 export LOG_LEVEL=INFO
 export DEBUG_MODE=false
 ```
 
-### 调整监控参数
+### Adjust Monitoring Parameters
 
 ```bash
-# 提高最小阈值，减少处理的交易数量
+# Increase minimum threshold to reduce number of processed transactions
 export MIN_ETH=10.0
 
-# 增加轮询间隔，减少处理频率
+# Increase polling interval to reduce processing frequency
 export POLL_INTERVAL_SEC=60
 ```
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
+### Common Issues
 
-1. **日志文件过大**
-   - 定期清理 `debug.log` 文件
-   - 调整日志级别为 INFO
+1. **Log File Too Large**
+   - Regularly clean up `debug.log` file
+   - Adjust log level to INFO
 
-2. **处理速度慢**
-   - 提高 `MIN_ETH` 阈值
-   - 减少 `DEBUG_WALLET_INFO` 输出
-   - 增加 `POLL_INTERVAL_SEC`
+2. **Slow Processing Speed**
+   - Increase `MIN_ETH` threshold
+   - Reduce `DEBUG_WALLET_INFO` output
+   - Increase `POLL_INTERVAL_SEC`
 
-3. **内存使用过高**
-   - 减少处理的区块数量
-   - 关闭不必要的debug选项
+3. **High Memory Usage**
+   - Reduce number of blocks processed
+   - Disable unnecessary debug options
 
-### 监控建议
+### Monitoring Recommendations
 
-- 在开发/测试环境使用debug模式
-- 生产环境建议使用INFO级别
-- 定期检查日志文件大小
-- 根据实际需求调整debug选项
+- Use debug mode in development/test environments
+- Production environment should use INFO level
+- Regularly check log file size
+- Adjust debug options based on actual needs
 
-## 示例输出
+## Example Output
 
-完整的debug输出示例请查看 `debug.log` 文件，其中包含：
-- 每个处理步骤的详细信息
-- 交易数据的完整解析
-- 钱包信息的提取过程
-- 数据库操作的详情
-- 错误和异常的完整堆栈跟踪 
+For complete debug output examples, see the `debug.log` file, which contains:
+- Detailed information for each processing step
+- Complete transaction data parsing
+- Wallet information extraction process
+- Database operation details
+- Complete stack traces for errors and exceptions

@@ -1,68 +1,68 @@
-# 故障排除指南
+# Troubleshooting Guide
 
-## 常见问题
+## Common Issues
 
-### 1. Ctrl+C 无法正常退出程序
+### 1. Ctrl+C Cannot Exit Program Normally
 
-**问题描述**: 按下 Ctrl+C 后程序无法正常退出，需要强制终止。
+**Problem Description**: After pressing Ctrl+C, the program cannot exit normally and needs to be force terminated.
 
-**原因分析**: 
-- 异步任务没有正确处理信号
-- WebSocket连接没有优雅关闭
-- 主循环没有响应中断信号
-- 在异步环境中使用传统的信号处理方式
+**Root Cause Analysis**: 
+- Async tasks don't properly handle signals
+- WebSocket connection doesn't close gracefully
+- Main loop doesn't respond to interrupt signals
+- Using traditional signal handling in async environment
 
-**解决方案**:
+**Solutions**:
 
-#### 方法1：使用简化启动脚本（推荐）
+#### Method 1: Use Simplified Startup Script (Recommended)
 ```bash
 ./start_simple.sh
 ```
-简化启动脚本直接运行Python程序，信号会直接传递给Python进程。
+The simplified startup script runs the Python program directly, signals are passed directly to the Python process.
 
-#### 方法2：直接运行程序
+#### Method 2: Run Program Directly
 ```bash
 python localorderbok.py
 ```
-现在程序已经修复了异步环境中的信号处理问题，按 Ctrl+C 后等待几秒钟即可正常退出。
+The program has now fixed signal handling issues in async environment, press Ctrl+C and wait a few seconds to exit normally.
 
-#### 方法3：使用原启动脚本
+#### Method 3: Use Original Startup Script
 ```bash
 ./start.sh
 ```
-原启动脚本会等待进程响应，如果10秒内没有响应会自动强制终止。
+The original startup script waits for process response, automatically force terminates if no response within 10 seconds.
 
-#### 方法4：强制终止
-如果程序仍然无法退出，可以使用以下命令强制终止：
+#### Method 4: Force Terminate
+If the program still cannot exit, you can use the following command to force terminate:
 ```bash
-# 查找Python进程
+# Find Python process
 ps aux | grep localorderbok.py
 
-# 强制终止进程
-kill -9 <进程ID>
+# Force terminate process
+kill -9 <process_id>
 ```
 
-### 2. 测试信号处理功能
+### 2. Test Signal Handling Functionality
 
-运行测试脚本验证信号处理是否正常工作：
+Run test script to verify signal handling works normally:
 ```bash
 python test_shutdown.py
 ```
 
-这个脚本会启动一个简单的异步任务，按 Ctrl+C 测试是否能正常退出。
+This script starts a simple async task, press Ctrl+C to test if it can exit normally.
 
-### 3. 信号处理机制
+### 3. Signal Handling Mechanism
 
-程序现在使用以下机制处理信号：
+The program now uses the following mechanism to handle signals:
 
-1. **信号注册**: 注册 SIGINT (Ctrl+C) 和 SIGTERM 信号处理器
-2. **优雅关闭**: 设置关闭事件，通知所有异步任务停止
-3. **WebSocket关闭**: 等待WebSocket连接正常关闭
-4. **超时保护**: 设置5秒超时，防止程序卡死
+1. **Signal Registration**: Register SIGINT (Ctrl+C) and SIGTERM signal handlers
+2. **Graceful Shutdown**: Set shutdown event, notify all async tasks to stop
+3. **WebSocket Close**: Wait for WebSocket connection to close normally
+4. **Timeout Protection**: Set 5 second timeout to prevent program from hanging
 
-### 4. 日志信息
+### 4. Log Information
 
-程序会在控制台输出以下日志信息：
+The program will output the following log information to console:
 ```
 INFO - Received signal 2, initiating graceful shutdown...
 INFO - Received shutdown signal, closing WebSocket...
@@ -71,69 +71,69 @@ INFO - Shutting down gracefully...
 INFO - Shutdown complete
 ```
 
-### 5. 启动脚本的优势
+### 5. Startup Script Advantages
 
-使用 `./start.sh` 启动脚本的优势：
+Advantages of using `./start.sh` startup script:
 
-- **信号处理**: 自动处理 Ctrl+C 信号
-- **进程管理**: 正确管理Python进程
-- **清理机制**: 确保程序完全退出
-- **错误处理**: 处理各种异常情况
+- **Signal Handling**: Automatically handles Ctrl+C signals
+- **Process Management**: Properly manages Python processes
+- **Cleanup Mechanism**: Ensures program completely exits
+- **Error Handling**: Handles various exception cases
 
-### 6. 开发环境调试
+### 6. Development Environment Debugging
 
-在开发环境中，可以使用以下方法调试：
+In development environment, you can use the following methods to debug:
 
 ```bash
-# 启用详细日志
+# Enable verbose logging
 export PYTHONPATH=.
 python -u localorderbok.py
 
-# 使用pdb调试
+# Use pdb debugger
 python -m pdb localorderbok.py
 ```
 
-### 7. 生产环境部署
+### 7. Production Environment Deployment
 
-在生产环境中，建议使用进程管理器：
+In production environment, it's recommended to use process managers:
 
 ```bash
-# 使用PM2
+# Use PM2
 pm2 start localorderbok.py --name orderbook
 
-# 使用Supervisor
-# 创建配置文件 /etc/supervisor/conf.d/orderbook.conf
+# Use Supervisor
+# Create config file /etc/supervisor/conf.d/orderbook.conf
 ```
 
-### 8. 常见错误信息
+### 8. Common Error Messages
 
 #### "Address already in use"
-端口被占用，解决方案：
+Port is occupied, solution:
 ```bash
-# 查找占用端口的进程
+# Find process occupying port
 lsof -i :8000
 
-# 终止进程
-kill -9 <进程ID>
+# Terminate process
+kill -9 <process_id>
 ```
 
 #### "Connection refused"
-WebSocket连接失败，解决方案：
-- 检查网络连接
-- 确认Binance API可用性
-- 查看防火墙设置
+WebSocket connection failed, solution:
+- Check network connection
+- Confirm Binance API availability
+- Check firewall settings
 
 #### "Module not found"
-依赖包缺失，解决方案：
+Missing dependency packages, solution:
 ```bash
 pip install -r requirements.txt
 ```
 
-## 联系支持
+## Contact Support
 
-如果遇到其他问题，请：
+If you encounter other issues, please:
 
-1. 查看日志输出
-2. 运行测试脚本
-3. 检查系统环境
-4. 参考官方文档 
+1. Check log output
+2. Run test scripts
+3. Check system environment
+4. Refer to official documentation

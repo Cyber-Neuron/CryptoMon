@@ -1,39 +1,39 @@
-# Wallet Monitor Debug 功能总结
+# Wallet Monitor Debug Feature Summary
 
-## 概述
+## Overview
 
-我已经为walletmonitor项目添加了全面的debug功能，让您可以观察逐条交易的处理细节。这些功能包括详细的日志记录、可配置的debug选项、以及专门的debug工具。
+I have added comprehensive debug functionality to the walletmonitor project, allowing you to observe transaction processing details. These features include detailed logging, configurable debug options, and specialized debug tools.
 
-## 新增的文件
+## New Files
 
-### 1. 配置文件
-- **`debug_config.py`** - Debug专用配置类，继承自Config
-- **`config.py`** - 已更新，添加了debug相关配置选项
+### 1. Configuration Files
+- **`debug_config.py`** - Debug-specific configuration class, inherits from Config
+- **`config.py`** - Updated with debug-related configuration options
 
-### 2. 主程序文件
-- **`debug_main.py`** - Debug版本的主程序，提供最大程度的调试信息
-- **`main.py`** - 已更新，支持debug模式
+### 2. Main Program Files
+- **`debug_main.py`** - Debug version of the main program, providing maximum debugging information
+- **`main.py`** - Updated to support debug mode
 
-### 3. 核心处理文件
-- **`block_processor.py`** - 已更新，添加了详细的交易处理debug信息
+### 3. Core Processing Files
+- **`block_processor.py`** - Updated with detailed transaction processing debug information
 
-### 4. 工具和脚本
-- **`start_debug.sh`** - Debug模式启动脚本
-- **`test_debug.py`** - Debug功能测试脚本
-- **`DEBUG_README.md`** - 详细的使用说明文档
+### 4. Tools and Scripts
+- **`start_debug.sh`** - Debug mode startup script
+- **`test_debug.py`** - Debug functionality test script
+- **`DEBUG_README.md`** - Detailed usage documentation
 
-## 主要功能特性
+## Main Features
 
-### 1. 可配置的Debug选项
+### 1. Configurable Debug Options
 
 ```python
-# 在config.py中新增的配置项
-DEBUG_MODE: bool = True                    # 启用debug模式
-DEBUG_TRANSACTION_DETAILS: bool = True     # 显示交易处理详情
-DEBUG_WALLET_INFO: bool = True             # 显示钱包信息提取详情
+# New configuration items in config.py
+DEBUG_MODE: bool = True                    # Enable debug mode
+DEBUG_TRANSACTION_DETAILS: bool = True     # Show transaction processing details
+DEBUG_WALLET_INFO: bool = True             # Show wallet information extraction details
 ```
 
-### 2. 环境变量支持
+### 2. Environment Variable Support
 
 ```bash
 export DEBUG_MODE=true
@@ -44,9 +44,9 @@ export MIN_ETH=1.0
 export POLL_INTERVAL_SEC=30
 ```
 
-### 3. 详细的日志记录
+### 3. Detailed Logging
 
-#### 区块处理日志
+#### Block Processing Logs
 ```
 Fetching recent blocks from last 10 minutes...
 Current block number: 18500000
@@ -57,7 +57,7 @@ Target timestamp: 1703122856 (looking back 10 minutes)
     Added block 18500000 with 150 transactions
 ```
 
-#### 交易处理日志
+#### Transaction Processing Logs
 ```
 Processing ETH transfer: 0xabcd...
   From: 0x1234...
@@ -75,7 +75,7 @@ Processing ETH transfer: 0xabcd...
     Amount: 1.0 ETH ($2500.00)
 ```
 
-#### ERC20转账日志
+#### ERC20 Transfer Logs
 ```
 Processing ERC20 transfers for tx: 0xefgh...
   Number of logs: 3
@@ -91,26 +91,26 @@ Processing ERC20 transfers for tx: 0xefgh...
     Skipping: Amount below minimum threshold
 ```
 
-#### 钱包信息提取日志
+#### Wallet Information Extraction Logs
 ```
 Extracting wallet info for address: 0x1234...
 Arkham API response for 0x1234...: {'arkhamEntity': {'name': 'Binance Hot Wallet', 'id': 'BINANCE', 'type': 'exchange'}}
 Created wallet info: Binance Hot Wallet (BINANCE) for 0x1234...
 ```
 
-### 4. 多种启动方式
+### 4. Multiple Startup Methods
 
-#### 方式1: 使用Debug启动脚本（推荐）
+#### Method 1: Use Debug Startup Script (Recommended)
 ```bash
 ./start_debug.sh
 ```
 
-#### 方式2: 直接运行debug主程序
+#### Method 2: Run Debug Main Program Directly
 ```bash
 python3 debug_main.py
 ```
 
-#### 方式3: 使用普通主程序但启用debug
+#### Method 3: Use Regular Main Program with Debug Enabled
 ```bash
 export DEBUG_MODE=true
 export DEBUG_TRANSACTION_DETAILS=true
@@ -119,97 +119,97 @@ export LOG_LEVEL=DEBUG
 python3 main.py
 ```
 
-### 5. 日志文件管理
+### 5. Log File Management
 
-- Debug模式会同时输出到控制台和`debug.log`文件
-- 每次启动时自动备份旧的日志文件为`debug.log.bak`
-- 支持实时查看和持久保存
+- Debug mode outputs to both console and `debug.log` file
+- Each startup automatically backs up old log file as `debug.log.bak`
+- Supports real-time viewing and persistent storage
 
-### 6. 性能优化选项
+### 6. Performance Optimization Options
 
 ```bash
-# 降低日志详细程度
+# Reduce log verbosity
 export DEBUG_WALLET_INFO=false
 export LOG_LEVEL=INFO
 
-# 调整监控参数
+# Adjust monitoring parameters
 export MIN_ETH=10.0
 export POLL_INTERVAL_SEC=60
 ```
 
-## 调试信息覆盖范围
+## Debug Information Coverage
 
-### 1. 启动阶段
-- 配置信息显示
-- 组件初始化状态
-- 连接测试结果
+### 1. Startup Phase
+- Configuration information display
+- Component initialization status
+- Connection test results
 
-### 2. 监控地址获取
-- 数据库查询详情
-- 地址过滤过程
-- 钱包信息显示
+### 2. Monitoring Address Retrieval
+- Database query details
+- Address filtering process
+- Wallet information display
 
-### 3. 区块处理
-- 区块获取过程
-- 时间范围计算
-- 交易数量统计
+### 3. Block Processing
+- Block retrieval process
+- Time range calculation
+- Transaction count statistics
 
-### 4. 交易处理
-- 每笔交易的详细分析
-- ETH转账识别和处理
-- ERC20转账解析
-- 金额转换和阈值检查
-- 钱包信息提取
+### 4. Transaction Processing
+- Detailed analysis of each transaction
+- ETH transfer identification and processing
+- ERC20 transfer parsing
+- Amount conversion and threshold checking
+- Wallet information extraction
 
-### 5. 数据存储
-- 数据库操作详情
-- 交易和流数据统计
-- 存储结果确认
+### 5. Data Storage
+- Database operation details
+- Transaction and flow data statistics
+- Storage result confirmation
 
-### 6. 错误处理
-- 异常详细信息
-- 堆栈跟踪
-- 错误恢复过程
+### 6. Error Handling
+- Detailed exception information
+- Stack traces
+- Error recovery process
 
-## 使用建议
+## Usage Recommendations
 
-### 开发/测试环境
-- 使用debug模式进行开发和测试
-- 设置较低的`MIN_ETH`阈值以看到更多交易
-- 使用较短的轮询间隔获得快速反馈
+### Development/Test Environment
+- Use debug mode for development and testing
+- Set lower `MIN_ETH` threshold to see more transactions
+- Use shorter polling intervals for quick feedback
 
-### 生产环境
-- 使用INFO级别的日志
-- 关闭debug选项以提高性能
-- 定期检查日志文件大小
+### Production Environment
+- Use INFO level logging
+- Disable debug options to improve performance
+- Regularly check log file size
 
-### 性能调优
-- 根据实际需求调整debug选项
-- 监控内存和CPU使用情况
-- 定期清理日志文件
+### Performance Tuning
+- Adjust debug options based on actual needs
+- Monitor memory and CPU usage
+- Regularly clean up log files
 
-## 测试验证
+## Test Verification
 
-运行测试脚本验证debug功能：
+Run test script to verify debug functionality:
 ```bash
 python3 test_debug.py
 ```
 
-测试内容包括：
-- 配置加载测试
-- 日志功能测试
-- 环境变量测试
-- 钱包信息提取测试
+Test content includes:
+- Configuration loading tests
+- Logging functionality tests
+- Environment variable tests
+- Wallet information extraction tests
 
-## 总结
+## Summary
 
-通过这些debug功能，您现在可以：
+With these debug features, you can now:
 
-1. **观察逐条交易处理** - 每笔交易都有详细的处理日志
-2. **监控钱包信息提取** - 了解Arkham API的调用和响应
-3. **跟踪区块处理过程** - 查看区块获取和解析的详细过程
-4. **分析性能瓶颈** - 通过详细日志识别性能问题
-5. **调试配置问题** - 验证配置是否正确加载
-6. **排查错误原因** - 获得完整的错误信息和堆栈跟踪
+1. **Observe Transaction Processing** - Each transaction has detailed processing logs
+2. **Monitor Wallet Information Extraction** - Understand Arkham API calls and responses
+3. **Track Block Processing** - View detailed process of block retrieval and parsing
+4. **Analyze Performance Bottlenecks** - Identify performance issues through detailed logs
+5. **Debug Configuration Issues** - Verify that configurations are loaded correctly
+6. **Troubleshoot Errors** - Get complete error information and stack traces
 
-这些功能将帮助您深入了解walletmonitor的工作机制，并能够快速定位和解决问题。 
+These features will help you gain deep insights into walletmonitor's working mechanism and quickly locate and resolve issues.

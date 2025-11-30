@@ -1,109 +1,109 @@
-# 信号处理修复总结
+# Signal Handling Fix Summary
 
-## 问题分析
+## Problem Analysis
 
-### 原始问题
-按下 Ctrl+C 后，Python进程无法正常退出，需要强制终止。
+### Original Problem
+After pressing Ctrl+C, the Python process cannot exit normally and needs to be force terminated.
 
-### 根本原因
-1. **异步环境信号处理**: 在异步环境中使用传统的 `signal.signal()` 方式处理信号
-2. **Shell脚本信号传递**: 使用后台进程运行Python程序，信号传递有问题
-3. **WebSocket连接阻塞**: WebSocket连接在无限循环中，没有检查关闭信号
+### Root Cause
+1. **Async Environment Signal Handling**: Using traditional `signal.signal()` method to handle signals in async environment
+2. **Shell Script Signal Passing**: Running Python program as background process, signal passing has issues
+3. **WebSocket Connection Blocking**: WebSocket connection in infinite loop, not checking shutdown signals
 
-## 解决方案
+## Solutions
 
-### 1. 修复异步环境信号处理
+### 1. Fix Async Environment Signal Handling
 
-**问题**: 在异步环境中，传统的信号处理方式不起作用
+**Problem**: In async environment, traditional signal handling doesn't work
 
-**解决方案**: 使用 `asyncio` 的信号处理方式
+**Solution**: Use `asyncio` signal handling method
 
 ```python
-# 修复前
+# Before fix
 signal.signal(signal.SIGINT, signal_handler)
 signal.signal(signal.SIGTERM, signal_handler)
 
-# 修复后
+# After fix
 loop = asyncio.get_running_loop()
 loop.add_signal_handler(signal.SIGINT, signal_handler)
 loop.add_signal_handler(signal.SIGTERM, signal_handler)
 ```
 
-### 2. 添加关闭事件机制
+### 2. Add Shutdown Event Mechanism
 
-**问题**: 异步任务无法响应外部信号
+**Problem**: Async tasks cannot respond to external signals
 
-**解决方案**: 使用 `asyncio.Event()` 来通知所有任务停止
+**Solution**: Use `asyncio.Event()` to notify all tasks to stop
 
 ```python
-# 全局关闭事件
+# Global shutdown event
 shutdown_event = asyncio.Event()
 
-# 在任务中检查关闭事件
+# Check shutdown event in tasks
 while not shutdown_event.is_set():
-    # 处理任务
+    # Process tasks
     if shutdown_event.is_set():
         break
 ```
 
-### 3. 创建简化启动脚本
+### 3. Create Simplified Startup Script
 
-**问题**: Shell脚本使用后台进程，信号传递有问题
+**Problem**: Shell script uses background process, signal passing has issues
 
-**解决方案**: 创建简化启动脚本，直接运行Python程序
+**Solution**: Create simplified startup script that runs Python program directly
 
 ```bash
-# 简化启动脚本
+# Simplified startup script
 python3 localorderbok.py
 ```
 
-## 修复效果
+## Fix Results
 
-### 修复前
-- Ctrl+C 无法退出程序
-- 需要强制终止进程
-- 用户体验差
+### Before Fix
+- Ctrl+C cannot exit program
+- Need to force terminate process
+- Poor user experience
 
-### 修复后
-- Ctrl+C 立即响应
-- 优雅关闭所有任务
-- 等待WebSocket连接关闭
-- 正常退出程序
+### After Fix
+- Ctrl+C immediately responds
+- Gracefully closes all tasks
+- Waits for WebSocket connection to close
+- Program exits normally
 
-## 使用方法
+## Usage
 
-### 推荐方式
+### Recommended Method
 ```bash
 ./start_simple.sh
 ```
 
-### 直接运行
+### Run Directly
 ```bash
 python localorderbok.py
 ```
 
-### 测试信号处理
+### Test Signal Handling
 ```bash
 python test_signal_fix.py
 ```
 
-## 技术细节
+## Technical Details
 
-### 信号处理流程
-1. 用户按 Ctrl+C
-2. 系统发送 SIGINT 信号
-3. asyncio 信号处理器捕获信号
-4. 设置关闭事件
-5. 所有任务检查关闭事件并停止
-6. 等待WebSocket连接关闭
-7. 程序正常退出
+### Signal Handling Flow
+1. User presses Ctrl+C
+2. System sends SIGINT signal
+3. asyncio signal handler captures signal
+4. Set shutdown event
+5. All tasks check shutdown event and stop
+6. Wait for WebSocket connection to close
+7. Program exits normally
 
-### 超时保护
-- 设置5秒超时，防止程序卡死
-- 如果超时，强制终止任务
+### Timeout Protection
+- Set 5 second timeout to prevent program from hanging
+- If timeout, force terminate tasks
 
-### 日志输出
-程序会输出详细的关闭日志：
+### Log Output
+Program outputs detailed shutdown logs:
 ```
 INFO - Received shutdown signal, initiating graceful shutdown...
 INFO - Received shutdown signal, closing WebSocket...
@@ -112,54 +112,54 @@ INFO - Shutting down gracefully...
 INFO - Shutdown complete
 ```
 
-## 文件变更
+## File Changes
 
-### 修改的文件
-- `localorderbok.py`: 修复异步信号处理
-- `start.sh`: 改进信号处理逻辑
-- `start_simple.sh`: 新增简化启动脚本
+### Modified Files
+- `localorderbok.py`: Fixed async signal handling
+- `start.sh`: Improved signal handling logic
+- `start_simple.sh`: New simplified startup script
 
-### 新增的文件
-- `test_signal_fix.py`: 异步信号处理测试
-- `SIGNAL_FIX_SUMMARY.md`: 修复总结文档
+### New Files
+- `test_signal_fix.py`: Async signal handling test
+- `SIGNAL_FIX_SUMMARY.md`: Fix summary document
 
-### 更新的文档
-- `README.md`: 更新启动说明
-- `USAGE.md`: 更新使用方法
-- `TROUBLESHOOTING.md`: 更新故障排除
-- `CHANGELOG.md`: 记录修复内容
+### Updated Documentation
+- `README.md`: Updated startup instructions
+- `USAGE.md`: Updated usage methods
+- `TROUBLESHOOTING.md`: Updated troubleshooting
+- `CHANGELOG.md`: Recorded fix content
 
-## 验证方法
+## Verification Methods
 
-### 1. 运行测试脚本
+### 1. Run Test Script
 ```bash
 python test_signal_fix.py
 ```
 
-### 2. 启动主程序测试
+### 2. Start Main Program Test
 ```bash
 ./start_simple.sh
-# 然后按 Ctrl+C
+# Then press Ctrl+C
 ```
 
-### 3. 检查进程
+### 3. Check Process
 ```bash
-# 启动程序后，检查进程
+# After starting program, check process
 ps aux | grep localorderbok.py
 
-# 按 Ctrl+C 后，确认进程已退出
+# After pressing Ctrl+C, confirm process has exited
 ps aux | grep localorderbok.py
 ```
 
-## 总结
+## Summary
 
-通过修复异步环境中的信号处理问题，现在程序可以正常响应 Ctrl+C 信号并优雅退出。主要改进包括：
+By fixing signal handling issues in async environment, the program can now normally respond to Ctrl+C signals and exit gracefully. Main improvements include:
 
-1. ✅ 使用 asyncio 信号处理方式
-2. ✅ 添加关闭事件机制
-3. ✅ 创建简化启动脚本
-4. ✅ 添加超时保护
-5. ✅ 完善日志输出
-6. ✅ 提供测试脚本
+1. ✅ Use asyncio signal handling method
+2. ✅ Add shutdown event mechanism
+3. ✅ Create simplified startup script
+4. ✅ Add timeout protection
+5. ✅ Complete log output
+6. ✅ Provide test scripts
 
-现在用户可以正常使用 Ctrl+C 退出程序了！ 
+Users can now normally use Ctrl+C to exit the program!

@@ -1,259 +1,259 @@
-# 期货交易数据分析程序总结
+# Futures Trading Data Analysis Program Summary
 
-## 项目概述
+## Project Overview
 
-基于您的需求，我创建了一个完整的期货交易数据分析程序，用于分析Binance期货交易数据并调用本地Order Book API来获取交易前后的挂单数量变化。
+Based on your requirements, I have created a complete futures trading data analysis program for analyzing Binance futures trading data and calling local Order Book API to get order quantity changes before and after trades.
 
-## 核心功能
+## Core Features
 
-### 1. 实时数据接收
-- 通过WebSocket连接Binance期货聚合交易数据流
-- 支持ETHUSDT等期货交易对
-- 实时接收交易事件和交易时间数据
+### 1. Real-time Data Reception
+- Connects to Binance futures aggregated trade data stream through WebSocket
+- Supports futures trading pairs such as ETHUSDT
+- Real-time reception of trade event and trade time data
 
-### 2. 交易分析
-- 分析交易前后的Order Book变化
-- 计算挂单数量差值
-- 判断交易类型（主动买入/卖出）
-- 识别挂单增加或减少的情况
+### 2. Trade Analysis
+- Analyzes Order Book changes before and after trades
+- Calculates order quantity differences
+- Determines trade type (active buy/sell)
+- Identifies order increases or decreases
 
-### 3. API集成
-- 调用本地Order Book API获取历史数据
-- 支持事件时间和交易时间分析
-- 获取指定价格和时间点的挂单信息
+### 3. API Integration
+- Calls local Order Book API to get historical data
+- Supports event time and trade time analysis
+- Gets order information at specified price and time points
 
-### 4. 可视化输出
-- 彩色终端输出
-- 详细的分析结果展示
-- 实时统计信息
-- 错误和警告提示
+### 4. Visualized Output
+- Colored terminal output
+- Detailed analysis results display
+- Real-time statistics
+- Error and warning prompts
 
-## 文件结构
+## File Structure
 
 ```
 orderbook/
-├── future_trade_analyzer.py      # 主程序文件
-├── trade_analyzer_config.py      # 配置文件
-├── start_trade_analyzer.sh       # 启动脚本
-├── test_trade_analyzer.py        # 测试脚本
-├── TRADE_ANALYZER_README.md      # 使用说明
-└── TRADE_ANALYZER_SUMMARY.md     # 总结文档
+├── future_trade_analyzer.py      # Main program file
+├── trade_analyzer_config.py      # Configuration file
+├── start_trade_analyzer.sh       # Startup script
+├── test_trade_analyzer.py        # Test script
+├── TRADE_ANALYZER_README.md      # Usage instructions
+└── TRADE_ANALYZER_SUMMARY.md     # Summary document
 ```
 
-## 技术实现
+## Technical Implementation
 
-### 1. 数据流程
+### 1. Data Flow
 ```
-Binance WebSocket → 交易数据接收 → 数据过滤 → API调用 → 分析计算 → 结果展示
+Binance WebSocket → Trade Data Reception → Data Filtering → API Calls → Analysis Calculation → Results Display
 ```
 
-### 2. 关键组件
+### 2. Key Components
 
-#### TradeAnalyzer类
-- 管理HTTP会话和API调用
-- 处理交易消息和分析
-- 缓冲区管理和统计分析
+#### TradeAnalyzer Class
+- Manages HTTP sessions and API calls
+- Handles trade messages and analysis
+- Buffer management and statistical analysis
 
-#### 配置管理
-- 可配置的分析参数
-- 灵活的API设置
-- 可调整的显示选项
+#### Configuration Management
+- Configurable analysis parameters
+- Flexible API settings
+- Adjustable display options
 
-#### WebSocket处理
-- 自动重连机制
-- 错误处理和恢复
-- 消息解析和验证
+#### WebSocket Handling
+- Automatic reconnection mechanism
+- Error handling and recovery
+- Message parsing and validation
 
-### 3. 分析逻辑
+### 3. Analysis Logic
 
-#### 交易类型判断
+#### Trade Type Determination
 ```python
-# m: true → 主动卖出（买方为做市商）
-# m: false → 主动买入（卖方为做市商）
+# m: true → Active sell (buyer is maker)
+# m: false → Active buy (seller is maker)
 if is_buyer_maker:
-    trade_type = "主动卖出"
+    trade_type = "Active Sell"
 else:
-    trade_type = "主动买入"
+    trade_type = "Active Buy"
 ```
 
-#### 挂单变化分析
+#### Order Change Analysis
 ```python
-# 获取交易前后的数据
+# Get data before and after trade
 before_data = await get_orderbook_at_time(price, trade_time_sec - 1)
 after_data = await get_orderbook_at_time(price, trade_time_sec + 1)
 
-# 计算变化
+# Calculate changes
 qty_change = after_qty - before_qty
 if qty_change > 0:
-    result = "挂单增加: 可能有新订单进入"
+    result = "Order Increase: New orders may have entered"
 elif qty_change < 0:
-    result = "挂单减少: 订单被消耗"
+    result = "Order Decrease: Orders consumed"
 else:
-    result = "挂单无明显变化"
+    result = "No Significant Order Change"
 ```
 
-## 使用方法
+## Usage
 
-### 1. 启动本地Order Book系统
+### 1. Start Local Order Book System
 ```bash
 ./start_simple.sh
 ```
 
-### 2. 启动交易分析程序
+### 2. Start Trade Analysis Program
 ```bash
 ./start_trade_analyzer.sh
 ```
 
-### 3. 运行测试
+### 3. Run Tests
 ```bash
 python3 test_trade_analyzer.py
 ```
 
-## 配置选项
+## Configuration Options
 
-### 主要配置参数
+### Main Configuration Parameters
 ```python
-# API配置
+# API configuration
 LOCAL_API_BASE_URL = "http://localhost:8000"
 WEBSOCKET_URL = "wss://fstream.binance.com/ws/ETHUSDT@aggTrade"
 SYMBOL = "ETHUSDT"
 
-# 分析配置
-MIN_QUANTITY_THRESHOLD = 1.0  # 最小交易数量阈值
-ANALYSIS_WINDOW_SECONDS = 5   # 分析时间窗口
-PRICE_TOLERANCE = 0.1         # 价格容差
+# Analysis configuration
+MIN_QUANTITY_THRESHOLD = 1.0  # Minimum trade quantity threshold
+ANALYSIS_WINDOW_SECONDS = 5   # Analysis time window
+PRICE_TOLERANCE = 0.1         # Price tolerance
 
-# 性能配置
-BUFFER_SIZE = 100             # 缓冲区大小
-ANALYSIS_INTERVAL = 1.0       # 分析间隔
-API_TIMEOUT = 5               # API超时时间
+# Performance configuration
+BUFFER_SIZE = 100             # Buffer size
+ANALYSIS_INTERVAL = 1.0       # Analysis interval
+API_TIMEOUT = 5               # API timeout
 ```
 
-## 输出示例
+## Output Examples
 
-### 分析结果
+### Analysis Results
 ```
 ============================================================
-交易分析结果
+Trade Analysis Result
 ============================================================
-交易信息:
-  时间: 18:30:15.123 (事件) / 18:30:15.120 (交易)
-  价格: $50000.00
-  数量: 1.5000 ETHUSDT
-  类型: 主动买入
+Trade Information:
+  Time: 18:30:15.123 (Event) / 18:30:15.120 (Trade)
+  Price: $50000.00
+  Quantity: 1.5000 ETHUSDT
+  Type: Active Buy
 
-Order Book变化:
-  交易前: 价格=$50000.00, 挂单量=10.500000
-  交易后: 价格=$50000.00, 挂单量=9.000000
-  变化量: -1.500000
-  挂单减少: 订单被消耗
+Order Book Changes:
+  Before Trade: Price=$50000.00, Order Quantity=10.500000
+  After Trade: Price=$50000.00, Order Quantity=9.000000
+  Change: -1.500000
+  Order Decrease: Orders consumed
 ============================================================
 ```
 
-### 统计信息
+### Statistics
 ```
-统计信息:
-  总交易数: 1250
-  已分析交易: 45
-  API调用次数: 90
-  错误次数: 2
-  缓冲区大小: 0
+Statistics:
+  Total Trades: 1250
+  Analyzed Trades: 45
+  API Calls: 90
+  Errors: 2
+  Buffer Size: 0
 ========================================
 ```
 
-## 测试结果
+## Test Results
 
-运行测试脚本的结果：
+Test script results:
 ```
-=== 测试结果 ===
-通过: 4/4
-成功率: 100.0%
-🎉 所有测试通过！程序可以正常运行。
+=== Test Results ===
+Passed: 4/4
+Success Rate: 100.0%
+🎉 All tests passed! Program can run normally.
 ```
 
-## 优势特点
+## Advantages
 
-### 1. 实时性
-- 毫秒级数据接收
-- 实时分析和展示
-- 低延迟API调用
+### 1. Real-time
+- Millisecond-level data reception
+- Real-time analysis and display
+- Low latency API calls
 
-### 2. 可靠性
-- 自动重连机制
-- 错误处理和恢复
-- 超时保护
+### 2. Reliability
+- Automatic reconnection mechanism
+- Error handling and recovery
+- Timeout protection
 
-### 3. 可配置性
-- 灵活的配置参数
-- 可调整的分析阈值
-- 可自定义的显示选项
+### 3. Configurability
+- Flexible configuration parameters
+- Adjustable analysis thresholds
+- Customizable display options
 
-### 4. 可扩展性
-- 模块化设计
-- 易于添加新功能
-- 支持多交易对
+### 4. Extensibility
+- Modular design
+- Easy to add new features
+- Supports multiple trading pairs
 
-## 性能优化
+## Performance Optimization
 
-### 1. 内存管理
-- 限制缓冲区大小
-- 定期清理过期数据
-- 优化数据结构
+### 1. Memory Management
+- Limit buffer size
+- Regularly clean expired data
+- Optimize data structures
 
-### 2. API调用优化
-- 设置合理的超时时间
-- 批量处理请求
-- 错误重试机制
+### 2. API Call Optimization
+- Set reasonable timeout times
+- Batch process requests
+- Error retry mechanism
 
-### 3. 网络优化
-- WebSocket连接复用
-- 自动重连和恢复
-- 连接状态监控
+### 3. Network Optimization
+- WebSocket connection reuse
+- Automatic reconnection and recovery
+- Connection status monitoring
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
-1. **本地API连接失败**: 确保localorderbok.py正在运行
-2. **WebSocket连接断开**: 程序会自动重连
-3. **API调用超时**: 检查网络连接和本地API状态
-4. **数据解析错误**: 检查Binance API状态
+### Common Issues
+1. **Local API Connection Failed**: Ensure localorderbok.py is running
+2. **WebSocket Connection Disconnected**: Program will automatically reconnect
+3. **API Call Timeout**: Check network connection and local API status
+4. **Data Parsing Error**: Check Binance API status
 
-### 解决方案
-- 查看详细日志输出
-- 运行测试脚本验证
-- 检查配置文件设置
-- 确认依赖包安装
+### Solutions
+- View detailed log output
+- Run test scripts to verify
+- Check configuration file settings
+- Confirm dependency packages installed
 
-## 扩展建议
+## Extension Suggestions
 
-### 1. 数据存储
-- 添加数据库支持
-- 保存分析结果
-- 历史数据查询
+### 1. Data Storage
+- Add database support
+- Save analysis results
+- Historical data queries
 
-### 2. 告警功能
-- 价格异常告警
-- 大单检测告警
-- 自定义告警规则
+### 2. Alert Function
+- Price anomaly alerts
+- Large order detection alerts
+- Custom alert rules
 
-### 3. 多交易对支持
-- 同时监控多个交易对
-- 跨交易对分析
-- 相关性分析
+### 3. Multi-Trading Pair Support
+- Monitor multiple trading pairs simultaneously
+- Cross-trading pair analysis
+- Correlation analysis
 
-### 4. 可视化界面
-- Web界面展示
-- 图表和趋势分析
-- 实时数据展示
+### 4. Visualization Interface
+- Web interface display
+- Charts and trend analysis
+- Real-time data display
 
-## 总结
+## Summary
 
-这个期货交易数据分析程序完全满足您的需求：
+This futures trading data analysis program fully meets your requirements:
 
-1. ✅ **实时获取期货交易数据**: 通过WebSocket接收Binance期货聚合交易数据
-2. ✅ **事件时间和交易时间分析**: 支持两种时间戳的分析
-3. ✅ **调用本地Order Book API**: 集成本地API获取历史数据
-4. ✅ **分析挂单数量变化**: 计算交易前后的挂单差值
-5. ✅ **可视化展示**: 彩色终端输出和详细分析结果
+1. ✅ **Real-time Futures Trade Data**: Receives Binance futures aggregated trade data through WebSocket
+2. ✅ **Event Time and Trade Time Analysis**: Supports analysis of both timestamp types
+3. ✅ **Call Local Order Book API**: Integrates local API to get historical data
+4. ✅ **Analyze Order Quantity Changes**: Calculates order differences before and after trades
+5. ✅ **Visualized Display**: Colored terminal output and detailed analysis results
 
-程序具有良好的可扩展性、可靠性和易用性，可以满足期货交易数据分析的各种需求。 
+The program has good extensibility, reliability, and usability, and can meet various needs for futures trading data analysis.

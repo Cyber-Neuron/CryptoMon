@@ -1,69 +1,69 @@
-# 🎯 同步大单统计和语音告警功能
+# 🎯 Synchronized Large Order Statistics and Voice Alert Feature
 
-## 📋 功能概述
+## 📋 Feature Overview
 
-在原有的同步大单检测基础上，新增了以下功能：
+Based on the original synchronized large order detection, the following features have been added:
 
-1. **操作类型统计** - 统计同步大单中开多、开空、平多、平空的操作分布
-2. **优势操作识别** - 自动识别占优势的操作类型
-3. **价格统计分析** - 计算现货和合约的平均成交价格及价差
-4. **智能语音告警** - 根据主要操作类型和价格信息发出相应的语音提醒
-5. **详细统计报告** - 提供完整的操作分布和价格统计信息
+1. **Operation Type Statistics** - Statistics on the distribution of long, short, close long, and close short operations in synchronized large orders
+2. **Dominant Operation Identification** - Automatically identifies the dominant operation type
+3. **Price Statistical Analysis** - Calculates average transaction prices for spot and futures, and price differences
+4. **Smart Voice Alerts** - Issues corresponding voice alerts based on main operation type and price information
+5. **Detailed Statistics Reports** - Provides complete operation distribution and price statistics
 
-## 🔧 功能特点
+## 🔧 Features
 
-### 📊 统计功能
-- 实时统计同步大单中的操作类型分布
-- 计算各操作类型的占比
-- 识别占优势的操作类型
-- 支持的操作类型：开多、开空、平多、平空、未知
+### 📊 Statistics Function
+- Real-time statistics on operation type distribution in synchronized large orders
+- Calculates percentage of each operation type
+- Identifies dominant operation type
+- Supported operation types: Long, Short, Close Long, Close Short, Unknown
 
-### 💰 价格分析
-- 计算现货和合约的平均成交价格
-- 分析现货与合约之间的价差
-- 统计交易总量
-- 识别溢价/折价情况
+### 💰 Price Analysis
+- Calculates average transaction prices for spot and futures
+- Analyzes price differences between spot and futures
+- Statistics on total trading volume
+- Identifies premium/discount situations
 
-### 🎤 语音告警
-- 根据主要操作类型发出专门的语音提醒
-- 播报平均成交价格信息
-- 当价差显著时播报价差信息
-- 支持不同操作类型的个性化告警
-- 大量同步大单时提供详细统计信息
-- 使用Google TTS提供高质量中文语音
+### 🎤 Voice Alerts
+- Issues specialized voice alerts based on main operation type
+- Broadcasts average transaction price information
+- Broadcasts price difference information when significant
+- Supports personalized alerts for different operation types
+- Provides detailed statistics when large synchronized orders detected
+- Uses Google TTS for high-quality Chinese voice
 
-## 🚀 使用方法
+## 🚀 Usage
 
-### 1. 自动运行
-功能已集成到 `bin_mon.py` 中，启动监控程序即可自动使用：
+### 1. Automatic Operation
+Feature is integrated into `bin_mon.py`, start monitoring program to automatically use:
 
 ```bash
 cd orderbook
 python bin_mon.py
 ```
 
-### 2. 测试功能
-运行测试脚本验证功能：
+### 2. Test Functionality
+Run test script to verify functionality:
 
 ```bash
 cd orderbook
 python test_sync_alert.py
 ```
 
-## 📖 功能详解
+## 📖 Feature Details
 
-### 操作类型判断逻辑
+### Operation Type Determination Logic
 
-系统通过以下逻辑判断合约交易的操作类型：
+The system determines futures trading operation types through the following logic:
 
 ```python
 def determine_position_action_improved(is_buyer_maker, ts):
-    # 基于Open Interest变化和主动方判断
-    if is_buyer_maker and delta_oi > 0:  # 主动卖出 + OI增加
+    # Based on Open Interest changes and active party determination
+    if is_buyer_maker and delta_oi > 0:  # Active sell + OI increase
         return "开空"
-    elif not is_buyer_maker and delta_oi > 0:  # 主动买入 + OI增加
+    elif not is_buyer_maker and delta_oi > 0:  # Active buy + OI increase
         return "开多"
-    elif delta_oi < 0:  # OI减少
+    elif delta_oi < 0:  # OI decrease
         if is_buyer_maker:
             return "平多"
         else:
@@ -72,19 +72,19 @@ def determine_position_action_improved(is_buyer_maker, ts):
         return "未知"
 ```
 
-### 价格统计逻辑
+### Price Statistics Logic
 
-当检测到同步大单时，系统会：
+When synchronized large orders are detected, the system will:
 
-1. **收集价格数据**
+1. **Collect Price Data**
    ```python
-   spot_prices = []      # 现货价格列表
-   futures_prices = []   # 合约价格列表
-   total_spot_qty = 0    # 现货总量
-   total_futures_qty = 0 # 合约总量
+   spot_prices = []      # Spot price list
+   futures_prices = []   # Futures price list
+   total_spot_qty = 0    # Spot total volume
+   total_futures_qty = 0 # Futures total volume
    ```
 
-2. **计算统计指标**
+2. **Calculate Statistics**
    ```python
    avg_spot_price = sum(spot_prices) / len(spot_prices)
    avg_futures_price = sum(futures_prices) / len(futures_prices)
@@ -92,21 +92,21 @@ def determine_position_action_improved(is_buyer_maker, ts):
    price_diff_percent = (price_diff / avg_spot_price * 100)
    ```
 
-3. **播报价格信息**
+3. **Broadcast Price Information**
    ```python
    price_alert_text = f"现货均价{avg_spot_price:.0f}，合约均价{avg_futures_price:.0f}"
-   if abs(price_diff_percent) > 0.5:  # 价差超过0.5%时播报
+   if abs(price_diff_percent) > 0.5:  # Broadcast when difference exceeds 0.5%
        if price_diff > 0:
            price_alert_text += f"，合约溢价{price_diff_percent:.1f}%"
        else:
            price_alert_text += f"，现货溢价{abs(price_diff_percent):.1f}%"
    ```
 
-### 统计和告警逻辑
+### Statistics and Alert Logic
 
-当检测到同步大单时，系统会：
+When synchronized large orders are detected, the system will:
 
-1. **统计操作分布**
+1. **Statistics on Operation Distribution**
    ```python
    sync_operations = {
        "开多": 0,
@@ -117,143 +117,143 @@ def determine_position_action_improved(is_buyer_maker, ts):
    }
    ```
 
-2. **识别优势操作**
+2. **Identify Dominant Operation**
    ```python
    dominant_operation = max(sync_operations.items(), key=lambda x: x[1])
    operation_name, operation_count = dominant_operation
    percentage = (operation_count / total_matches) * 100
    ```
 
-3. **发出语音告警**
+3. **Issue Voice Alerts**
    ```python
    if operation_name == "开多":
        warning_alert.trading_alert("开多", f"{total_matches}笔同步", "ETH")
    elif operation_name == "开空":
        warning_alert.trading_alert("开空", f"{total_matches}笔同步", "ETH")
-   # ... 其他操作类型
+   # ... other operation types
    ```
 
-## 📊 输出示例
+## 📊 Output Examples
 
-### 控制台输出
+### Console Output
 ```
-=== [检测到疑似同步大单] ===
-[现货] 14:30:25.123 qty=15.50 price=2450.50 买单
-[合约] 14:30:25.456 qty=20.00 price=2450.75 开多
-时间间隔: 0.333秒
+=== [Detected Suspected Synchronized Large Orders] ===
+[Spot] 14:30:25.123 qty=15.50 price=2450.50 Buy Order
+[Futures] 14:30:25.456 qty=20.00 price=2450.75 Long
+Time Interval: 0.333 seconds
 
-📊 同步大单统计: 总计3笔, 开多2笔, 开空1笔
-🎯 主要操作: 开多 (66.7%)
-💰 价格统计:
-   现货平均价格: $2450.85
-   合约平均价格: $2451.20
-   价差: $+0.35 (+0.014%)
-   现货总量: 45.20 ETH
-   合约总量: 58.40 ETH
+📊 Synchronized Large Order Statistics: Total 3 orders, Long 2, Short 1
+🎯 Main Operation: Long (66.7%)
+💰 Price Statistics:
+   Spot Average Price: $2450.85
+   Futures Average Price: $2451.20
+   Price Difference: $+0.35 (+0.014%)
+   Spot Total Volume: 45.20 ETH
+   Futures Total Volume: 58.40 ETH
 ```
 
-### 语音告警
-- **操作告警**: "发现大额开多，ETH，金额3笔同步"
-- **价格告警**: "现货均价2451，合约均价2451"
-- **价差告警**: "现货均价2451，合约均价2451，合约溢价0.1%"
-- **详细统计**: "同步大单详情: 开多占67%，共3笔"
+### Voice Alerts
+- **Operation Alert**: "发现大额开多，ETH，金额3笔同步"
+- **Price Alert**: "现货均价2451，合约均价2451"
+- **Price Difference Alert**: "现货均价2451，合约均价2451，合约溢价0.1%"
+- **Detailed Statistics**: "同步大单详情: 开多占67%，共3笔"
 
-## 🎯 应用场景
+## 🎯 Application Scenarios
 
-### 1. 趋势判断
-- **开多占优势**: 可能预示上涨趋势
-- **开空占优势**: 可能预示下跌趋势
-- **平多占优势**: 可能预示获利了结
-- **平空占优势**: 可能预示空头回补
+### 1. Trend Judgment
+- **Long Dominant**: May indicate upward trend
+- **Short Dominant**: May indicate downward trend
+- **Close Long Dominant**: May indicate profit taking
+- **Close Short Dominant**: May indicate short covering
 
-### 2. 价格分析
-- **合约溢价**: 可能预示看涨情绪
-- **现货溢价**: 可能预示看跌情绪
-- **价差扩大**: 可能预示市场波动加剧
-- **价差收窄**: 可能预示市场趋于稳定
+### 2. Price Analysis
+- **Futures Premium**: May indicate bullish sentiment
+- **Spot Premium**: May indicate bearish sentiment
+- **Price Difference Widening**: May indicate increased market volatility
+- **Price Difference Narrowing**: May indicate market stabilization
 
-### 3. 风险监控
-- 大量同步大单可能预示市场异常
-- 特定操作类型集中可能预示操纵行为
-- 时间间隔过短可能预示程序化交易
-- 价差异常可能预示套利机会或风险
+### 3. Risk Monitoring
+- Large synchronized orders may indicate market anomalies
+- Concentration of specific operation types may indicate manipulation
+- Very short time intervals may indicate algorithmic trading
+- Abnormal price differences may indicate arbitrage opportunities or risks
 
-### 4. 交易决策
-- 根据优势操作类型调整交易策略
-- 结合价差信息进行套利决策
-- 设置相应的风险控制措施
-- 优化交易时机和价格
+### 4. Trading Decisions
+- Adjust trading strategies based on dominant operation types
+- Make arbitrage decisions based on price difference information
+- Set corresponding risk control measures
+- Optimize trading timing and prices
 
-## ⚙️ 配置参数
+## ⚙️ Configuration Parameters
 
-### 主要参数
+### Main Parameters
 ```python
-SPOT_THRESHOLD = 5      # 现货大单阈值
-FUTURES_THRESHOLD = 20  # 合约大单阈值
-MATCH_INTERVAL = 4      # 匹配时间窗口（秒）
-OI_WINDOW = 4          # OI对比窗口（秒）
+SPOT_THRESHOLD = 5      # Spot large order threshold
+FUTURES_THRESHOLD = 20  # Futures large order threshold
+MATCH_INTERVAL = 4      # Matching time window (seconds)
+OI_WINDOW = 4          # OI comparison window (seconds)
 ```
 
-### 告警阈值
-- **基础告警**: 检测到任何同步大单
-- **详细统计**: 同步大单数量 ≥ 3笔
-- **价差告警**: 价差绝对值 > 0.5%
-- **高频告警**: 可根据需要调整告警频率
+### Alert Thresholds
+- **Basic Alert**: Detects any synchronized large orders
+- **Detailed Statistics**: Synchronized large orders ≥ 3
+- **Price Difference Alert**: Price difference absolute value > 0.5%
+- **High Frequency Alert**: Can adjust alert frequency as needed
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### 1. 语音告警不工作
-- 检查网络连接（Google TTS需要网络）
-- 确认音频设备正常工作
-- 检查音量设置
+### 1. Voice Alerts Not Working
+- Check network connection (Google TTS requires network)
+- Confirm audio device working normally
+- Check volume settings
 
-### 2. 统计不准确
-- 检查OI数据是否正常更新
-- 确认时间窗口设置合理
-- 验证操作类型判断逻辑
-- 检查价格数据完整性
+### 2. Statistics Inaccurate
+- Check if OI data is updating normally
+- Confirm time window settings are reasonable
+- Verify operation type determination logic
+- Check price data completeness
 
-### 3. 告警过于频繁
-- 调整大单阈值
-- 增加匹配时间窗口
-- 设置告警冷却时间
-- 调整价差告警阈值
+### 3. Alerts Too Frequent
+- Adjust large order threshold
+- Increase matching time window
+- Set alert cooldown time
+- Adjust price difference alert threshold
 
-## 📈 性能优化
+## 📈 Performance Optimization
 
-### 1. 内存优化
-- 使用deque限制队列长度
-- 定期清理过期数据
-- 优化数据结构
+### 1. Memory Optimization
+- Use deque to limit queue length
+- Regularly clean expired data
+- Optimize data structures
 
-### 2. CPU优化
-- 减少不必要的计算
-- 优化匹配算法
-- 使用缓存减少重复计算
+### 2. CPU Optimization
+- Reduce unnecessary calculations
+- Optimize matching algorithms
+- Use caching to reduce repeated calculations
 
-### 3. 网络优化
-- 批量处理API请求
-- 使用连接池
-- 实现重试机制
+### 3. Network Optimization
+- Batch process API requests
+- Use connection pools
+- Implement retry mechanisms
 
-## 🔮 未来扩展
+## 🔮 Future Extensions
 
-### 1. 机器学习集成
-- 使用ML模型预测操作类型
-- 自动识别异常模式
-- 智能告警阈值调整
-- 价格趋势预测
+### 1. Machine Learning Integration
+- Use ML models to predict operation types
+- Automatically identify abnormal patterns
+- Smart alert threshold adjustment
+- Price trend prediction
 
-### 2. 多市场支持
-- 扩展到其他交易对
-- 支持多交易所
-- 跨市场分析
-- 套利机会识别
+### 2. Multi-Market Support
+- Extend to other trading pairs
+- Support multiple exchanges
+- Cross-market analysis
+- Arbitrage opportunity identification
 
-### 3. 高级分析
-- 历史数据回测
-- 模式识别
-- 风险评估
-- 价格相关性分析
+### 3. Advanced Analysis
+- Historical data backtesting
+- Pattern recognition
+- Risk assessment
+- Price correlation analysis
 
-现在你的同步大单监控系统具备了智能统计、价格分析和语音告警功能，可以更好地分析市场动态并做出及时响应！ 
+Now your synchronized large order monitoring system has intelligent statistics, price analysis, and voice alert features, allowing you to better analyze market dynamics and respond promptly!

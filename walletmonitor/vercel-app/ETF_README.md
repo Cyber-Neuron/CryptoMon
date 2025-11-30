@@ -1,87 +1,87 @@
-# ETF 流向分析功能
+# ETF Flow Analysis Feature
 
-## 功能概述
+## Feature Overview
 
-ETF流向分析页面提供了加密货币ETF净流入与价格走势的关联分析，帮助用户了解宏观事件对加密货币市场的影响。
+The ETF flow analysis page provides correlation analysis between cryptocurrency ETF net inflows and price trends, helping users understand the impact of macro events on the cryptocurrency market.
 
-## 主要功能
+## Main Features
 
-### 1. 宏观事件标记
-- **FOMC会议**: 美联储议息会议，影响市场利率预期
-- **非农就业数据**: 美国非农就业人数变化，反映经济状况
-- **CPI数据**: 消费者物价指数，衡量通货膨胀水平
-- **PPI数据**: 生产者物价指数
-- **GDP数据**: 国内生产总值
+### 1. Macro Event Markers
+- **FOMC Meetings**: Federal Reserve interest rate meetings, affecting market rate expectations
+- **Non-Farm Payroll Data**: US non-farm employment changes, reflecting economic conditions
+- **CPI Data**: Consumer Price Index, measuring inflation levels
+- **PPI Data**: Producer Price Index
+- **GDP Data**: Gross Domestic Product
 
-### 2. ETF净流入数据
-- 支持ETH和BTC的ETF数据
-- 显示每日净流入/流出量
-- 正值表示净流入，负值表示净流出
-- 数据来源：Farside.co.uk
+### 2. ETF Net Inflow Data
+- Supports ETH and BTC ETF data
+- Displays daily net inflow/outflow
+- Positive values indicate net inflow, negative values indicate net outflow
+- Data source: Farside.co.uk
 
-### 3. 价格K线图
-- 使用币安API获取实时价格数据
-- 显示开盘价、最高价、最低价、收盘价
-- 支持6个月、1年、2年的时间范围
+### 3. Price Candlestick Charts
+- Uses Binance API to fetch real-time price data
+- Displays open, high, low, and close prices
+- Supports 6 months, 1 year, and 2 year time ranges
 
-### 4. 可视化分析
-- 组合图表显示：K线图 + ETF净流入柱状图
-- 宏观事件垂直标记线
-- 统计信息面板
-- 响应式设计
+### 4. Visualization Analysis
+- Combined chart display: Candlestick chart + ETF net inflow bar chart
+- Macro event vertical marker lines
+- Statistics information panel
+- Responsive design
 
-## 技术实现
+## Technical Implementation
 
-### 前端组件
-- `ETFChart.jsx`: 主要图表组件，使用lightweight-charts库
-- `page.jsx`: ETF分析页面，包含控制面板和数据展示
+### Frontend Components
+- `ETFChart.jsx`: Main chart component, using lightweight-charts library
+- `page.jsx`: ETF analysis page, containing control panel and data display
 
-### 后端API
-- `/api/etf-data`: 获取ETF数据、价格数据和宏观事件
-- 支持真实数据获取和模拟数据备用方案
+### Backend API
+- `/api/etf-data`: Fetches ETF data, price data, and macro events
+- Supports real data fetching and simulated data fallback
 
-### 数据源
-1. **ETF数据**: Farside.co.uk API
-2. **价格数据**: 币安公共API
-3. **宏观事件**: 预定义的关键事件时间点
+### Data Sources
+1. **ETF Data**: Farside.co.uk API
+2. **Price Data**: Binance public API
+3. **Macro Events**: Predefined key event time points
 
-## 使用方法
+## Usage
 
-1. 访问 `/etf` 页面
-2. 选择资产类型（ETH或BTC）
-3. 选择时间范围（6个月、1年、2年）
-4. 查看图表和统计信息
-5. 分析宏观事件对价格和ETF流向的影响
+1. Visit the `/etf` page
+2. Select asset type (ETH or BTC)
+3. Select time range (6 months, 1 year, 2 years)
+4. View charts and statistics
+5. Analyze the impact of macro events on prices and ETF flows
 
-## 图表说明
+## Chart Description
 
-### 图表元素
-- **K线图**: 显示价格走势（绿色上涨，红色下跌）
-- **柱状图**: 显示ETF净流入（绿色流入，红色流出）
-- **垂直线**: 标记宏观事件发生时间
+### Chart Elements
+- **Candlestick Chart**: Displays price trends (green for up, red for down)
+- **Bar Chart**: Displays ETF net inflow (green for inflow, red for outflow)
+- **Vertical Lines**: Mark macro event occurrence times
 
-### 统计信息
-- 总ETF净流入
-- 最大单日流入
-- 最大单日流出
-- 宏观事件数量
+### Statistics
+- Total ETF net inflow
+- Maximum single-day inflow
+- Maximum single-day outflow
+- Number of macro events
 
-## 数据更新
+## Data Updates
 
-- ETF数据：每日更新
-- 价格数据：实时更新
-- 宏观事件：手动维护
+- ETF Data: Updated daily
+- Price Data: Updated in real-time
+- Macro Events: Manually maintained
 
-## 注意事项
+## Notes
 
-1. 真实数据获取可能受到API限制，会自动降级到模拟数据
-2. 宏观事件时间点需要定期更新
-3. 图表性能优化，支持大量数据点显示
+1. Real data fetching may be subject to API limitations, will automatically fallback to simulated data
+2. Macro event time points need to be updated regularly
+3. Chart performance optimization supports displaying large amounts of data points
 
-## 未来改进
+## Future Improvements
 
-1. 添加更多宏观事件类型
-2. 支持更多时间周期（周线、月线）
-3. 添加技术指标叠加
-4. 支持数据导出功能
-5. 添加事件影响分析报告 
+1. Add more macro event types
+2. Support more time periods (weekly, monthly)
+3. Add technical indicator overlays
+4. Support data export functionality
+5. Add event impact analysis reports

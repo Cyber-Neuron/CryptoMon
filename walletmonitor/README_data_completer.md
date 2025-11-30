@@ -1,134 +1,134 @@
-# 数据补齐程序使用说明
+# Data Completer Program Usage Instructions
 
-## 概述
+## Overview
 
-数据补齐程序 (`data_completer.py`) 用于补充数据库中缺失的钱包信息。该程序会查找 `transactions` 表中 `from_wallet_id` 或 `to_wallet_id` 为空的记录，通过 Web3 接口获取交易的详细信息，然后使用 `extract_wallet_info` 方法获取钱包信息并更新数据库。
+The data completer program (`data_completer.py`) is used to supplement missing wallet information in the database. The program finds records in the `transactions` table where `from_wallet_id` or `to_wallet_id` is empty, gets transaction details through Web3 interface, then uses the `extract_wallet_info` method to get wallet information and update the database.
 
-## 功能特性
+## Features
 
-- 🔍 **自动检测缺失数据**: 自动查找数据库中缺失钱包信息的交易记录
-- 🌐 **Web3 集成**: 通过以太坊节点获取交易详细信息
-- 🏷️ **钱包信息提取**: 使用 Arkham API 获取钱包标签和分组信息
-- 📊 **批量处理**: 支持批量处理大量交易记录
-- 📝 **详细日志**: 提供详细的处理日志和错误信息
-- 🔄 **事务安全**: 使用数据库事务确保数据一致性
-- 🖥️ **命令行工具**: 提供便捷的命令行界面
+- 🔍 **Automatic Missing Data Detection**: Automatically finds transaction records in the database with missing wallet information
+- 🌐 **Web3 Integration**: Gets transaction details through Ethereum node
+- 🏷️ **Wallet Information Extraction**: Uses Arkham API to get wallet labels and group information
+- 📊 **Batch Processing**: Supports batch processing of large numbers of transaction records
+- 📝 **Detailed Logging**: Provides detailed processing logs and error information
+- 🔄 **Transaction Safety**: Uses database transactions to ensure data consistency
+- 🖥️ **Command Line Tool**: Provides convenient command line interface
 
-## 使用方法
+## Usage
 
-### 1. 命令行工具（推荐）
+### 1. Command Line Tool (Recommended)
 
 ```bash
-# 检查不完整的交易数量
+# Check number of incomplete transactions
 python cli_completer.py --check
 
-# 运行数据补齐（默认批处理大小100）
+# Run data completion (default batch size 100)
 python cli_completer.py --run
 
-# 运行数据补齐（批处理大小50）
+# Run data completion (batch size 50)
 python cli_completer.py --run --batch-size 50
 
-# 测试单个交易
+# Test single transaction
 python cli_completer.py --test-tx 0x1234567890abcdef...
 
-# 详细日志
+# Verbose logging
 python cli_completer.py --run --verbose
 
-# 调试模式
+# Debug mode
 python cli_completer.py --run --debug
 
-# 试运行模式（不实际更新数据库）
+# Dry-run mode (doesn't actually update database)
 python cli_completer.py --run --dry-run
 ```
 
-### 2. 直接运行程序
+### 2. Run Program Directly
 
 ```bash
-# 运行数据补齐程序
+# Run data completer program
 python data_completer.py
 ```
 
-### 3. 测试功能
+### 3. Test Functionality
 
 ```bash
-# 运行测试脚本
+# Run test script
 python test_data_completer.py
 ```
 
-### 4. 在代码中使用
+### 4. Use in Code
 
 ```python
 from data_completer import DataCompleter
 from config import load_config
 
-# 加载配置
+# Load configuration
 config = load_config()
 
-# 创建数据补齐器
+# Create data completer
 completer = DataCompleter(config)
 
-# 运行数据补齐（默认批处理大小为100）
+# Run data completion (default batch size 100)
 completer.run(batch_size=50)
 ```
 
-## 命令行工具详细说明
+## Command Line Tool Details
 
-### 参数说明
+### Parameter Description
 
-- `--check`: 检查不完整的交易数量，不进行实际处理
-- `--run`: 运行数据补齐程序
-- `--test-tx HASH`: 测试处理单个交易
-- `--batch-size N`: 设置批处理大小（默认：100）
-- `--verbose, -v`: 详细日志输出
-- `--debug, -d`: 调试模式（最详细的日志）
-- `--dry-run`: 试运行模式（不实际更新数据库）
+- `--check`: Check number of incomplete transactions, does not perform actual processing
+- `--run`: Run data completer program
+- `--test-tx HASH`: Test processing single transaction
+- `--batch-size N`: Set batch size (default: 100)
+- `--verbose, -v`: Verbose log output
+- `--debug, -d`: Debug mode (most detailed logs)
+- `--dry-run`: Dry-run mode (doesn't actually update database)
 
-### 使用场景
+### Usage Scenarios
 
-1. **首次使用**：
+1. **First Use**:
    ```bash
-   # 先检查有多少不完整的交易
+   # First check how many incomplete transactions there are
    python cli_completer.py --check
    
-   # 试运行，确认程序正常工作
+   # Dry-run to confirm program works normally
    python cli_completer.py --run --dry-run --verbose
    
-   # 正式运行
+   # Run officially
    python cli_completer.py --run --batch-size 50
    ```
 
-2. **测试特定交易**：
+2. **Test Specific Transaction**:
    ```bash
-   # 测试处理单个交易
+   # Test processing single transaction
    python cli_completer.py --test-tx 0x1234567890abcdef... --verbose
    ```
 
-3. **调试问题**：
+3. **Debug Issues**:
    ```bash
-   # 启用调试模式获取最详细的信息
+   # Enable debug mode to get most detailed information
    python cli_completer.py --run --debug
    ```
 
-## 配置要求
+## Configuration Requirements
 
-确保以下配置正确设置：
+Ensure the following configurations are correctly set:
 
-1. **数据库连接**: `DATABASE_URL` 环境变量或配置文件中的数据库连接字符串
-2. **以太坊节点**: `PUBLICNODE_URL` 配置项，指向可用的以太坊 RPC 节点
-3. **Arkham API**: 可选的 `ARKHAM_API_KEY` 用于获取钱包标签信息
+1. **Database Connection**: `DATABASE_URL` environment variable or database connection string in config file
+2. **Ethereum Node**: `PUBLICNODE_URL` configuration item, pointing to available Ethereum RPC node
+3. **Arkham API**: Optional `ARKHAM_API_KEY` for getting wallet label information
 
-## 程序流程
+## Program Flow
 
-1. **初始化**: 连接数据库和以太坊节点
-2. **查找缺失数据**: 查询数据库中 `from_wallet_id` 或 `to_wallet_id` 为空的交易
-3. **获取交易详情**: 通过 Web3 获取每个交易的 `from` 和 `to` 地址
-4. **处理钱包地址**: 对每个地址调用 `extract_wallet_info` 获取钱包信息
-5. **更新数据库**: 将获取到的钱包ID更新到交易记录中
-6. **批量处理**: 按批次处理，提供进度信息
+1. **Initialization**: Connect to database and Ethereum node
+2. **Find Missing Data**: Query transactions where `from_wallet_id` or `to_wallet_id` is empty
+3. **Get Transaction Details**: Get `from` and `to` addresses through Web3
+4. **Process Wallet Address**: Call `extract_wallet_info` for each address to get wallet information
+5. **Update Database**: Update wallet ID to transaction records
+6. **Batch Processing**: Process in batches, provide progress information
 
-## 输出示例
+## Output Examples
 
-### 命令行工具输出
+### Command Line Tool Output
 
 ```
 $ python cli_completer.py --check
@@ -143,7 +143,7 @@ First 5 incomplete transactions:
   ... and 145 more
 
 $ python cli_completer.py --run --batch-size 50
-🚀 开始运行数据补齐程序...
+🚀 Starting data completer program...
 2024-01-15 10:30:00 - data_completer - INFO - DataCompleter initialized successfully
 2024-01-15 10:30:01 - data_completer - INFO - Found 150 transactions with missing wallet info
 2024-01-15 10:30:01 - data_completer - INFO - Processing batch 1/3
@@ -152,10 +152,10 @@ $ python cli_completer.py --run --batch-size 50
 2024-01-15 10:35:00 - data_completer - INFO -   Successfully processed: 145
 2024-01-15 10:35:00 - data_completer - INFO -   Failed: 5
 2024-01-15 10:35:00 - data_completer - INFO -   Total: 150
-✅ 数据补齐程序运行完成
+✅ Data completer program completed
 ```
 
-### 测试单个交易输出
+### Test Single Transaction Output
 
 ```
 $ python cli_completer.py --test-tx 0x1234567890abcdef... --verbose
@@ -168,60 +168,60 @@ Testing transaction: 0x1234567890abcdef...
   To wallet ID: 43
 ```
 
-## 错误处理
+## Error Handling
 
-程序包含完善的错误处理机制：
+The program includes comprehensive error handling:
 
-- **网络错误**: 自动重试和错误日志记录
-- **数据库错误**: 事务回滚和详细错误信息
-- **API 限制**: 处理 Arkham API 调用限制
-- **无效数据**: 跳过无效的交易哈希或地址
+- **Network Errors**: Automatic retry and error log recording
+- **Database Errors**: Transaction rollback and detailed error information
+- **API Limits**: Handle Arkham API call limits
+- **Invalid Data**: Skip invalid transaction hashes or addresses
 
-## 性能优化
+## Performance Optimization
 
-- **批量处理**: 默认批处理大小为100，可根据需要调整
-- **缓存机制**: 利用数据库管理器的钱包缓存
-- **连接池**: 使用数据库连接池提高性能
-- **进度跟踪**: 实时显示处理进度
+- **Batch Processing**: Default batch size is 100, can be adjusted as needed
+- **Caching Mechanism**: Utilizes database manager's wallet cache
+- **Connection Pool**: Uses database connection pool to improve performance
+- **Progress Tracking**: Real-time display of processing progress
 
-## 注意事项
+## Notes
 
-1. **API 限制**: 注意 Arkham API 的调用频率限制
-2. **网络稳定性**: 确保以太坊节点连接稳定
-3. **数据库备份**: 建议在运行前备份数据库
-4. **监控资源**: 大量数据处理时注意内存和CPU使用情况
-5. **日志文件**: 程序会自动创建 `data_completer.log` 日志文件
+1. **API Limits**: Pay attention to Arkham API call frequency limits
+2. **Network Stability**: Ensure Ethereum node connection is stable
+3. **Database Backup**: Recommend backing up database before running
+4. **Monitor Resources**: Pay attention to memory and CPU usage when processing large amounts of data
+5. **Log Files**: Program automatically creates `data_completer.log` log file
 
-## 故障排除
+## Troubleshooting
 
-### 常见问题
+### Common Issues
 
-1. **连接失败**: 检查 `PUBLICNODE_URL` 配置
-2. **数据库错误**: 验证 `DATABASE_URL` 和数据库权限
-3. **API 错误**: 检查 Arkham API 密钥和网络连接
-4. **内存不足**: 减少批处理大小
+1. **Connection Failed**: Check `PUBLICNODE_URL` configuration
+2. **Database Error**: Verify `DATABASE_URL` and database permissions
+3. **API Error**: Check Arkham API key and network connection
+4. **Out of Memory**: Reduce batch size
 
-### 调试模式
+### Debug Mode
 
-启用调试日志以获取更详细的信息：
+Enable debug logs to get more detailed information:
 
 ```bash
 python cli_completer.py --run --debug
 ```
 
-或者：
+Or:
 
 ```python
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 ```
 
-## 扩展功能
+## Extended Features
 
-可以根据需要扩展以下功能：
+The following features can be extended as needed:
 
-- **多链支持**: 支持其他区块链网络
-- **自定义过滤器**: 添加交易过滤条件
-- **并行处理**: 使用多线程提高处理速度
-- **Web 界面**: 添加 Web 管理界面
-- **定时任务**: 集成到定时任务系统中 
+- **Multi-chain Support**: Support other blockchain networks
+- **Custom Filters**: Add transaction filter conditions
+- **Parallel Processing**: Use multi-threading to improve processing speed
+- **Web Interface**: Add web management interface
+- **Scheduled Tasks**: Integrate into scheduled task system
