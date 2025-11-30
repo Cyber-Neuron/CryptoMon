@@ -1,182 +1,347 @@
-# Bitcoin P2P Network Monitor (trade_monitor)
+# Trade Monitor - Comprehensive Cryptocurrency Monitoring & Analysis Platform
 
-This is a Python-based Bitcoin P2P network monitoring tool that connects to Bitcoin nodes through the Tor network to monitor and analyze large transactions. The project has been extended into a complete trading monitoring and analysis platform.
+This is a comprehensive Python-based cryptocurrency monitoring and analysis platform that has evolved from a Bitcoin P2P network monitoring tool into a complete multi-chain trading monitoring, analysis, and visualization system.
 
-## Features
+## 🎯 Project Overview
 
-- Anonymous connection to Bitcoin nodes through the Tor network
-- Support for connecting to .onion hidden service nodes
-- Automatic Bitcoin P2P protocol handshake completion
-- Monitor and analyze large transactions (default threshold: 100 BTC)
-- Detailed logging and error handling
-- Support for parallel multi-node connections
-- New features:
-  - Arkham wallet label tracking
-  - Transaction data visualization
-  - Smart contract analysis
-  - Multi-chain data monitoring
-  - Real-time price tracking
-  - Whale transaction monitoring
-  - Institutional trading analysis
+The platform provides real-time monitoring, analysis, and visualization of cryptocurrency transactions, fund flows, order books, and market data across multiple blockchains and exchanges.
 
-## System Requirements
+## ✨ Core Modules
 
-- Python 3.9+
-- Docker and Docker Compose
-- Tor service
-- Node.js 16+ (for frontend interface)
-- PostgreSQL database
+### 1. **Wallet Monitor** (`walletmonitor/`)
+Ethereum transaction monitoring system for tracking large transactions and fund flows.
 
-## Installation
+**Features:**
+- Real-time monitoring of large ETH and ERC20 token transactions
+- Arkham wallet label integration
+- Fund flow visualization dashboard
+- ETF flow analysis with macro event markers
+- Transaction records and charts
+- Debug mode for detailed transaction analysis
+- Data completer for missing wallet information
 
-1. Clone the repository:
+**Quick Start:**
+```bash
+cd walletmonitor
+docker-compose up -d  # Start PostgreSQL
+python main.py        # Start monitoring
+```
+
+**Documentation:**
+- [Wallet Monitor README](walletmonitor/README.md)
+- [Debug Mode Guide](walletmonitor/DEBUG_README.md)
+- [Deployment Guide](walletmonitor/DEPLOYMENT_GUIDE.md)
+- [Project Summary](walletmonitor/PROJECT_SUMMARY.md)
+
+### 2. **Order Book System** (`orderbook/`)
+Local order book maintenance and futures trading analysis system.
+
+**Features:**
+- Real-time Binance Futures WebSocket connection
+- Local order book snapshot maintenance
+- Historical data storage (24 hours)
+- REST API for querying position quantities
+- Nearest level price queries
+- Futures trade analyzer
+- Synchronized large order detection with voice alerts
+- Google TTS integration for trading alerts
+
+**Quick Start:**
+```bash
+cd orderbook
+pip install -r requirements.txt
+./start_simple.sh  # Start order book system
+```
+
+**Documentation:**
+- [Order Book README](orderbook/README.md)
+- [Usage Guide](orderbook/USAGE.md)
+- [Troubleshooting](orderbook/TROUBLESHOOTING.md)
+- [Trade Analyzer Guide](orderbook/TRADE_ANALYZER_README.md)
+- [TTS Voice Alerts](orderbook/TTS_README.md)
+
+### 3. **Exchange Monitor** (`exchange_monitor/`)
+Exchange wallet balance monitoring with real-time candlestick charts.
+
+**Features:**
+- Monitors ETH and USDT balance changes for specified wallet addresses
+- Real-time candlestick charts with multiple timeframes
+- Supabase integration
+- Next.js web interface deployed on Vercel
+
+**Quick Start:**
+```bash
+cd exchange_monitor
+pip install -r requirements.txt
+python monitor.py  # Start monitoring
+cd web && npm install && npm run dev  # Start frontend
+```
+
+**Documentation:**
+- [Exchange Monitor README](exchange_monitor/README.md)
+
+### 4. **Binance Data Collector** (`binance_data_collector/`)
+Comprehensive Binance market data collection toolkit.
+
+**Features:**
+- Spot order book depth and trades
+- Perpetual/Delivery contract funding rates and open interest
+- Contract liquidation orders
+- Options chain and IV curve snapshots
+- Batch data collection
+
+**Quick Start:**
+```bash
+cd binance_data_collector
+pip install -r requirements.txt
+# Configure API keys in config.yaml
+python run_all.py  # Run all collectors
+```
+
+**Documentation:**
+- [Binance Data Collector README](binance_data_collector/README.md)
+
+### 5. **Visualization Dashboard** (`walletmonitor/vercel-app/`)
+Next.js-based fund flow monitoring dashboard.
+
+**Features:**
+- Fund flow charts using TradingView Lightweight Charts
+- Multi-token support (ETH, USDC, USDT, etc.)
+- Time range selection (1 hour to 30 days)
+- ETF flow analysis with macro events
+- Transaction records and charts
+- Responsive design
+
+**Quick Start:**
+```bash
+cd walletmonitor/vercel-app
+npm install
+npm run dev  # Development
+npm run build  # Production build
+```
+
+**Documentation:**
+- [Flow Monitor README](walletmonitor/vercel-app/README.md)
+- [ETF Analysis Guide](walletmonitor/vercel-app/ETF_README.md)
+- [Transaction Charts](walletmonitor/vercel-app/TRANSACTIONS_CHART_README.md)
+- [Deployment Guide](walletmonitor/DEPLOYMENT_GUIDE.md)
+
+### 6. **Bitcoin P2P Monitor** (`exchange_monitor/`)
+Original Bitcoin P2P network monitoring through Tor.
+
+**Features:**
+- Anonymous connection to Bitcoin nodes through Tor
+- Support for .onion hidden service nodes
+- Automatic Bitcoin P2P protocol handshake
+- Large transaction monitoring (default: 100 BTC threshold)
+
+## 🚀 System Requirements
+
+- **Python**: 3.9+
+- **Node.js**: 16+ (for frontend interfaces)
+- **PostgreSQL**: Database for data storage
+- **Docker & Docker Compose**: Containerized deployment
+- **Tor**: For Bitcoin P2P monitoring (optional)
+
+## 📦 Installation
+
+### 1. Clone Repository
 ```bash
 git clone https://github.com/Cyber-Neuron/trade_monitor.git
 cd trade_monitor
 ```
 
-2. Install Python dependencies:
+### 2. Install Python Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Install frontend dependencies:
+### 3. Install Frontend Dependencies
 ```bash
+# For exchange monitor web interface
 cd exchange_monitor/web
+npm install
+
+# For wallet monitor dashboard
+cd walletmonitor/vercel-app
 npm install
 ```
 
-4. Configure the database:
+### 4. Database Setup
 ```bash
 # Create PostgreSQL database
 createdb trade_monitor
-# Import database schema
+
+# Import schemas (if available)
 psql trade_monitor < visualization/crawler/database/db.sql
 ```
 
-5. Configure Tor:
-- Ensure Tor service is installed and running
-- Default SOCKS5 proxy: `socks5h://127.0.0.1:9050`
+### 5. Configuration
+Each module has its own configuration file. See individual module READMEs for details:
+- `walletmonitor/config.py` - Wallet monitoring configuration
+- `exchange_monitor/config.py` - Exchange monitoring configuration
+- `orderbook/config.py` - Order book configuration
+- `binance_data_collector/config.yaml` - Binance API keys
 
-## Usage
+## 🎮 Usage Examples
 
-1. Start Tor service:
+### Wallet Monitoring
 ```bash
-docker-compose up -d tor
+cd walletmonitor
+docker-compose up -d  # Start database
+python main.py        # Start monitoring
 ```
 
-2. Start monitoring service:
+### Order Book System
 ```bash
-python exchange_monitor/monitor.py
+cd orderbook
+./start_simple.sh     # Start order book
+# In another terminal
+python future_trade_analyzer.py  # Start trade analyzer
 ```
 
-3. Start frontend interface:
+### Fund Flow Dashboard
 ```bash
-cd exchange_monitor/web
+cd walletmonitor/vercel-app
 npm run dev
+# Visit http://localhost:3000
 ```
 
-The program will automatically:
-- Wait for Tor network to be ready
-- Test Tor connection
-- Fetch node list from Bitnodes
-- Connect to Bitcoin nodes
-- Start monitoring transactions
-- Analyze and display transaction data
-
-## Configuration
-
-Main configuration parameters (in `exchange_monitor/config.py`):
-
-```python
-# Bitcoin network constants
-MAGIC_MAINNET = bytes.fromhex("f9beb4d9")
-PROTOCOL_VERSION = 70016
-LARGE_TX_THRESHOLD_BTC = 100  # Large transaction threshold
-
-# Tor proxy configuration
-TOR_PROXY = os.getenv("TOR_PROXY", "socks5h://127.0.0.1:9050")
-
-# Database configuration
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_PORT = os.getenv("DB_PORT", "5432")
-DB_NAME = os.getenv("DB_NAME", "trade_monitor")
-DB_USER = os.getenv("DB_USER", "postgres")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+### Binance Data Collection
+```bash
+cd binance_data_collector
+python run_all.py  # Collect all data types
 ```
 
-## New Features
+## 📊 Key Features
 
-### Arkham Integration
-- Wallet label tracking support
-- Automatic wallet information updates
-- Transaction history analysis
+### Real-time Monitoring
+- Real-time transaction monitoring across multiple blockchains
+- WebSocket connections for live data streams
+- Automatic reconnection and error recovery
 
-### Visualization Features
-- Real-time transaction charts
-- Whale transaction tracking
-- Institutional trading analysis
-- Price trend charts
+### Data Analysis
+- Fund flow analysis and visualization
+- Order book depth analysis
+- Futures trading pattern detection
+- Synchronized large order identification
+- ETF flow correlation with macro events
 
-### Smart Contract Analysis
-- Contract code auditing
-- Transaction pattern recognition
-- Risk warning system
+### Visualization
+- TradingView Lightweight Charts integration
+- Interactive candlestick charts
+- Fund flow bar charts
+- Transaction timeline visualization
+- Responsive web dashboards
 
-## Logging
+### Alerting
+- Google TTS voice alerts for trading events
+- Synchronized large order alerts
+- Price anomaly detection
+- Custom alert rules
 
-The program uses Python's logging module to record logs, including:
-- Connection status
-- Message exchange
-- Transaction analysis
-- Error messages
-- Performance metrics
-- System status
+## 🏗️ Architecture
 
-Log format:
 ```
-Timestamp - Log Level - Module Name - Message Content
+trade_monitor/
+├── walletmonitor/          # Ethereum wallet monitoring
+│   ├── main.py            # Main monitoring service
+│   ├── vercel-app/        # Next.js dashboard
+│   └── ...
+├── orderbook/              # Order book system
+│   ├── localorderbok.py   # Order book maintenance
+│   ├── future_trade_analyzer.py  # Trade analysis
+│   └── ...
+├── exchange_monitor/       # Exchange monitoring
+│   ├── monitor.py         # Balance monitoring
+│   └── web/               # Frontend interface
+├── binance_data_collector/ # Binance data collection
+│   ├── binance_spot.py
+│   ├── binance_futures.py
+│   └── binance_options.py
+└── visualization/          # Visualization tools
 ```
 
-## Notes
+## 📚 Documentation
 
-1. Ensure Tor service is running normally
-2. The program requires network connection
-3. Large transaction threshold can be adjusted as needed
-4. It is recommended to test in a test environment first
-5. Regularly backup the database
-6. Pay attention to API call limits
+Each module has comprehensive documentation:
 
-## Troubleshooting
+- **Wallet Monitor**: [README](walletmonitor/README.md) | [Debug Guide](walletmonitor/DEBUG_README.md) | [Deployment](walletmonitor/DEPLOYMENT_GUIDE.md)
+- **Order Book**: [README](orderbook/README.md) | [Usage](orderbook/USAGE.md) | [Troubleshooting](orderbook/TROUBLESHOOTING.md)
+- **Exchange Monitor**: [README](exchange_monitor/README.md)
+- **Binance Collector**: [README](binance_data_collector/README.md)
+- **Dashboard**: [Flow Monitor](walletmonitor/vercel-app/README.md) | [ETF Analysis](walletmonitor/vercel-app/ETF_README.md)
 
-1. Tor connection issues:
-   - Check Tor service status
-   - Verify proxy configuration
-   - View detailed logs
+## 🔧 Configuration
 
-2. Node connection issues:
-   - Check network connection
-   - Verify node address format
-   - Check connection timeout settings
+### Environment Variables
+```bash
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/trade_monitor
 
-3. Database issues:
-   - Check database connection configuration
-   - Verify database permissions
-   - View database logs
+# Ethereum Node
+PUBLICNODE_URL=https://eth-mainnet.g.alchemy.com/v2/your-api-key
 
-4. Frontend issues:
-   - Check Node.js version
-   - Verify dependency installation
-   - Check browser console
+# Arkham API (optional)
+ARKHAM_API_KEY=your-arkham-api-key
 
-## Contributing
+# Binance API (for data collector)
+BINANCE_API_KEY=your-api-key
+BINANCE_API_SECRET=your-api-secret
+```
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+1. **Database Connection Failed**
+   - Check PostgreSQL is running
+   - Verify `DATABASE_URL` environment variable
+   - Check database permissions
+
+2. **WebSocket Connection Issues**
+   - Verify network connectivity
+   - Check API endpoint availability
+   - Review connection logs
+
+3. **Module Import Errors**
+   - Ensure all dependencies are installed
+   - Check Python path configuration
+   - Verify virtual environment activation
+
+4. **Frontend Build Errors**
+   - Check Node.js version (16+)
+   - Clear `node_modules` and reinstall
+   - Verify environment variables
+
+See individual module troubleshooting guides for more details.
+
+## 🤝 Contributing
 
 Welcome to submit Issues and Pull Requests to improve the project. Please ensure:
+
 1. Code follows project standards
 2. Add necessary tests
 3. Update relevant documentation
 4. Follow commit message conventions
 
-## License
+## 📝 License
 
 MIT License
+
+## 🔗 Related Projects
+
+- [TradingView Lightweight Charts](https://www.tradingview.com/lightweight-charts/)
+- [Arkham Intelligence](https://www.arkhamintelligence.com/)
+- [Binance API](https://binance-docs.github.io/apidocs/)
+
+## 📧 Support
+
+For issues and questions:
+- Check module-specific README files
+- Review troubleshooting guides
+- Open an issue on GitHub
+
+---
+
+**Note**: This project is actively maintained and continuously evolving. Check individual module documentation for the latest features and updates.
